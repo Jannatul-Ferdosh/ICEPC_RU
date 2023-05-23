@@ -13,7 +13,7 @@ function auth(req, res, next){
     }
     catch(er)
     {
-        res.status(400).send('Invalid Token.');
+        res.status(400).send('Invalid JWT Token.');
     }
 }
 
