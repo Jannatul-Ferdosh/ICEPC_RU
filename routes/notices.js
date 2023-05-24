@@ -13,7 +13,7 @@ router.get('/', async (req,res) => {
     res.send(notices);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const {error} = validateNotice(req.body);
     if(error) return res.status(404).send(error.details[0].message);
 
@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
     res.send(notice);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',auth, async (req, res) => {
     const notice = await Notice.findByIdAndRemove(req.params.id);
 
     if(!notice) return res.status(404).send('The notice with given ID is not found.');
