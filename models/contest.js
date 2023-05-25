@@ -28,6 +28,14 @@ const contestSchema =new Schema({
     },
     link : {
         type: String
+    },
+    isApproved: {
+        type: Boolean,
+        required: true
+    },
+    date: {
+        type: Date,
+        required: true
     }
 });
 
@@ -42,7 +50,9 @@ function validateContest(contest)
         participant: Joi.array().items(Joi.string()),
         description: Joi.string().min(10).required(),
         rank: Joi.string().min(1).required(),
-        link: Joi.optional()
+        link: Joi.optional(),
+        date: Joi.date().required,
+        isApproved : Joi.boolean().required()
      });
 
      return schema.validate(contest);

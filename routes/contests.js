@@ -11,7 +11,7 @@ const router = express.Router();
 
 
 router.get('/', async (req, res) => {
-    const contests = await Contest.find();
+    const contests = await Contest.find().sort('date');
     res.send(contests);
 });
 
@@ -74,7 +74,7 @@ router.post('/', auth, async (req, res) => {
     req.body.imgLink.push(imgPath);
 
 
-    let contest = new Contest(_.pick(req.body, [ 'imgLink', 'header', 'participant', 'description', 'rank', 'link']));
+    let contest = new Contest(_.pick(req.body, [ 'imgLink', 'header', 'participant', 'description', 'rank', 'link','date','isApproved']));
 
     contest = await contest.save();
     return res.send(contest);
