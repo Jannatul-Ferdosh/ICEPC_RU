@@ -60,7 +60,7 @@ function validateContest(contest)
         description: Joi.string().min(10).required(),
         rank: Joi.string().min(1).required(),
         link: Joi.optional(),
-        date: Joi.date().required,
+        date: Joi.date().required(),
         isApproved : Joi.boolean().required()
      });
 
