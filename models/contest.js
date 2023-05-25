@@ -13,8 +13,15 @@ const contestSchema =new Schema({
         required: true,
         minlength: 10
     },
-    participant: {
-        type: Array
+    participant1: {
+        type: String,
+        required: true
+    },
+    participant2: {
+        type: String,
+    },
+    participant3: {
+        type: String,
     },
     description: {
         type: String,
@@ -47,7 +54,9 @@ function validateContest(contest)
      const schema = Joi.object({
         imgLink: Joi.array().items(Joi.string()),
         header : Joi.string().min(10).required(),
-        participant: Joi.array().items(Joi.string()),
+        participant1: Joi.string().required().min(3),
+        participant2: Joi.optional(),
+        participant3: Joi.optional(),
         description: Joi.string().min(10).required(),
         rank: Joi.string().min(1).required(),
         link: Joi.optional(),

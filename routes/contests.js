@@ -74,7 +74,7 @@ router.post('/', auth, async (req, res) => {
     req.body.imgLink.push(imgPath);
 
 
-    let contest = new Contest(_.pick(req.body, [ 'imgLink', 'header', 'participant', 'description', 'rank', 'link','date','isApproved']));
+    let contest = new Contest(_.pick(req.body, [ 'imgLink', 'header', 'participant1','participant2','participant3', 'description', 'rank', 'link','date','isApproved']));
 
     contest = await contest.save();
     return res.send(contest);
