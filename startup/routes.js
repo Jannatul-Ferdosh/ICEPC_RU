@@ -1,4 +1,5 @@
 const express = require('express');
+const upload = require('express-fileupload');
 
 const notices = require('../routes/notices');
 const users = require('../routes/users');
@@ -12,6 +13,8 @@ const contests = require('../routes/contests');
 module.exports = function(app)
 {
     app.use(express.json());
+    app.use(upload());
+    app.use('/api', express.static('public'));
 
     app.use('/api/notices', notices);
     app.use('/api/users', users);
