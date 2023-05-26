@@ -10,8 +10,7 @@ const profileSchema =new Schema({
         required: true
     },
     profilePicture : {
-        type: String,
-        required: true
+        type: String
     },
     bio : {
         type: String,
@@ -69,7 +68,7 @@ function validateProfile(profile)
 {
      const schema = Joi.object({
         name: Joi.string().required().min(3),
-        profilePicture : Joi.string().required(),
+        profilePicture : Joi.optional(),
         bio : Joi.string().required().min(20),
         currentStatus: Joi.string().required(),
         contacts: Joi.object({

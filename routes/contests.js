@@ -80,7 +80,7 @@ router.post('/', auth, async (req, res) => {
     return res.send(contest);
 });
 
-router.put('/:id', auth, async (req, res) => {
+router.put('/approve/:id', auth, async (req, res) => {
     const contest = await Contest.findByIdAndUpdate(req.params.id, {isApproved: req.body.isApproved}, {new: true});
 
     if(!contest) return res.status(404).send('The contest with the given id is not found');
