@@ -7,13 +7,14 @@ const jwt = require('jsonwebtoken');
 
 const {Profile, validateProfile} = require('../models/profile');
 const express = require('express');
+const { User } = require('../models/user');
 const router = express.Router();
 
 
 router.get('/me', async (req, res) => {
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    console.log(jwtDecoded);
     const profile = await Profile.findById(jwtDecoded.profileId);
+
     if(!profile) return res.status(404).send('The Profile with the given id is not found');
     res.send(profile);
 });
@@ -86,9 +87,14 @@ router.post('/', auth, async (req, res) => {
     req.body.profilePicture = "";
 
     let profile = new Profile(_.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
-
+    
     profile = await profile.save();
-    return res.send(profile);
+
+    const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
+    let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id},{new:true});
+
+
+    return res.send(user);
 });
 
 router.put('/:id', auth, async (req, res) => {

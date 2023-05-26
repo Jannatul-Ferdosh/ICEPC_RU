@@ -21,7 +21,7 @@ const profileSchema =new Schema({
         type: String,
         required: true
     },
-    contacts: {
+    contacts: new Schema({
         phone: {
             type: Number,
             required: true,
@@ -36,8 +36,8 @@ const profileSchema =new Schema({
         linkedinLink: {
             type: String
         }
-    },
-    onlineJudgeLink : {
+    }),
+    onlineJudgeLink : new Schema({
         githubLink: {
             type: String
         },
@@ -50,15 +50,15 @@ const profileSchema =new Schema({
         leetcodeLink: {
             type: String
         }
-    },
-    onlineJudgeHandle : {
+    }),
+    onlineJudgeHandle : new Schema({
         codeforces: {
             type: String
         },
         vjudge: {
             type: String
         }
-    }
+    })
 });
 
 

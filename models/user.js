@@ -24,12 +24,24 @@ const userSchema = new mongoose.Schema({
     profileId:{
         type: String,
         required:true
+    },
+    isUpdated: {
+        type: Boolean,
+        required: true
+    },
+    isAdmin : {
+        type: Boolean,
+        required: true
+    },
+    isSuperAdmin : {
+        type: Boolean,
+        required: true
     }
 });
 
 
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({_id: this._id,sid: this.sid,profileId: this.profileId, isAdmin: this.isAdmin, isSuperAdmin: this.isSuperAdmin}, process.env.jwtPrivateKey);
+    const token = jwt.sign({_id: this._id,sid: this.sid,profileId: this.profileId, isAdmin: this.isAdmin, isSuperAdmin: this.isSuperAdmin, isUpdated: this.isUpdated}, process.env.jwtPrivateKey);
     return token;
 }
 
@@ -41,7 +53,10 @@ function validateUser(user)
         sid: Joi.string().min(10).max(10).required(),
         email: Joi.string().required().email(),
         password: Joi.string().required(),
-        profileId: Joi.objectId().required()
+        profileId: Joi.objectId().required(),
+        isUpdated: Joi.boolean().required(),
+        isAdmin: Joi.boolean().required(),
+        isSuperAdmin: Joi.boolean().required()
     });
 
     return schema.validate(user);
