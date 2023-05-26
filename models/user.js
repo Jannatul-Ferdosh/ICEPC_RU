@@ -27,15 +27,15 @@ const userSchema = new mongoose.Schema({
     },
     isUpdated: {
         type: Boolean,
-        required: true
+        default: false
     },
     isAdmin : {
         type: Boolean,
-        required: true
+        default: false
     },
     isSuperAdmin : {
         type: Boolean,
-        required: true
+        default: false
     }
 });
 
@@ -53,10 +53,7 @@ function validateUser(user)
         sid: Joi.string().min(10).max(10).required(),
         email: Joi.string().required().email(),
         password: Joi.string().required(),
-        profileId: Joi.objectId().required(),
-        isUpdated: Joi.boolean().required(),
-        isAdmin: Joi.boolean().required(),
-        isSuperAdmin: Joi.boolean().required()
+        profileId: Joi.objectId().required()
     });
 
     return schema.validate(user);
