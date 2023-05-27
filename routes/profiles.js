@@ -116,7 +116,7 @@ router.post('/', auth, async (req, res) => {
     profile = await profile.save();
 
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    createCodeforces(profile._id, profile.onlineJudgeHandle.codeforces);
+    await createCodeforces(profile._id, profile.onlineJudgeHandle.codeforces);
 
     let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id, isUpdated: true},{new:true});
     const token = user.generateAuthToken();
