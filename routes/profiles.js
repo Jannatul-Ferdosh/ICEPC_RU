@@ -127,7 +127,7 @@ router.post('/', auth, async (req, res) => {
     profile = await profile.save();
 
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    await createCodeforces(profile._id, profile.onlineJudgeHandle.codeforces);
+    await createCodeforces(profile._id, data);
 
     let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id, isUpdated: true},{new:true});
     const token = user.generateAuthToken();
@@ -143,6 +143,17 @@ router.put('/:id', auth, async (req, res) => {
     if(!profile) return res.status(404).send('The Profile with the given id is not found');
 
     req.body.profilePicture = profile.profilePicture;
+
+    async function call(handle){
+        return await new Promise(resolve => {
+            fetchUrl(`https://codeforces.com/api/user.info?handles=${handle}`, async (err, meta, body) => {
+                const data = JSON.parse(body);
+                resolve(data);
+            });
+        })
+    };
+    const data = await call(req.body.onlineJudgeHandle.codeforces);
+    if(data.status !='OK') return res.status(404).send('Handle Invalid');
 
     profile = await Profile.findByIdAndUpdate(req.params.id, _.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']), {new:true});
     if(!profile) return res.status(404).send('The profile with the given id is not found');

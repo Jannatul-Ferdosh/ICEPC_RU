@@ -41,26 +41,13 @@ const codeforcesSchema =new Schema({
 
 const Codeforces = mongoose.model('Codeforces', codeforcesSchema);
 
-const createCodeforces = async (profileId,handle) => {
-    const cfUrl = 'https://codeforces.com/api/';
-    fetchUrl(`${cfUrl}user.info?handles=${handle}`, async (err, meta, body) => {
-        if(err){
-            throw err;
-        }
-        if(JSON.parse(body).status != 'OK')
-        {
-            throw new Error('Invalid Handle');
-        }
-        const data = JSON.parse(body).result[0];
+const createCodeforces = async (profileId, data) => {
+    
         let codeforces = new Codeforces(_.pick(data, ['rating', 'maxRating', 'rank', 'maxRank']));
         
         codeforces = await codeforces.save();
 
         await Profile.findByIdAndUpdate(profileId,{codeforcesId : codeforces._id},{new:true});
-
-    });
-
-
 };
 
 const updateCodeforces = async (id, handle) => {
