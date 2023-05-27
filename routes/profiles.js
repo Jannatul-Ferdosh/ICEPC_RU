@@ -4,6 +4,7 @@ const admin = require('../middleware/admin');
 const _ = require('lodash');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const fetchUrl = require('fetch').fetchUrl;
 
 const {Profile, validateProfile} = require('../models/profile');
 const express = require('express');
@@ -111,6 +112,17 @@ router.post('/', auth, async (req, res) => {
     req.body.profilePicture = "";
 
     let profile = new Profile(_.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
+
+    async function call(handle){
+        return await new Promise(resolve => {
+            fetchUrl(`https://codeforces.com/api/user.info?handles=${handle}`, async (err, meta, body) => {
+                const data = JSON.parse(body);
+                resolve(data);
+            });
+        })
+    };
+    const data = await call(profile.onlineJudgeHandle.codeforces);
+    if(data.status !='OK') return res.status(404).send('Handle Invalid');
     
     profile = await profile.save();
 

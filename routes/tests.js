@@ -7,42 +7,26 @@ const cf = require('../utils/cfcustom');
 const { default: axios } = require('axios');
 
 router.get('/', async (req, res) => {
-    const cfUrl = 'https://codeforces.com/api/';
-    try{
-        axios.get(`${cfUrl}user.status?handle=asm_atikur`)
-        .then((res) => {
-            if (res.data.status === 'OK') throw new Error('Invalid handle');
+    async function call(handle){
+        return await new Promise(resolve => {
+            fetchUrl(`https://codeforces.com/api/user.info?handles=${handle}`, async (err, meta, body) => {
+                const data = JSON.parse(body);
+                resolve(data);
+            });
         })
-        .catch((err) => console.log(err));
+    };
+    const data = await call('asm_atikur');
+    console.log(data);
 
-    }
-    catch(err) {
-        return err;
-    }
+    // const cfUrl = 'https://codeforces.com/api/';
+    // fetchUrl(`https://codeforces.com/api/user.info?handles=asm_atikur`, async (err, meta, body) => {
         
+    //     const data = JSON.parse(body).result[0];
+    //     console.log(data);
+
+    // });
 
     
-    // fetchUrl(`${cfUrl}user.status?handle=asm_atikur`, async (err, meta, body) => {
-    //     if(err) throw err;
-
-    //     const data = JSON.parse(body)['result'];
-    //     const contestCount = new Set();
-    //     const solvedProblemCount = new Set();
-    //     for(let i in data){
-    //         let sub = data[i];
-    //         if(sub.author.participantType ==='CONTESTANT')
-    //         {
-    //             contestCount.add(sub.contestId);
-    //         }
-    //         if(sub.verdict ==='OK')
-    //         {
-    //             solvedProblemCount.add(`${sub.contestId}${sub.problem.index}`);
-    //         }
-    //     }
-    //     console.log(contestCount.size);
-    //     console.log(solvedProblemCount.size);
-        
-    // });
 
 });
 
