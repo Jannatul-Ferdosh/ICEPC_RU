@@ -110,9 +110,6 @@ router.post('/', auth, async (req, res) => {
     if(error) return res.status(404).send(error.details[0].message);
 
     req.body.profilePicture = "";
-
-    let profile = new Profile(_.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
-
     async function call(handle){
         return await new Promise(resolve => {
             fetchUrl(`https://codeforces.com/api/user.info?handles=${handle}`, async (err, meta, body) => {
@@ -121,9 +118,13 @@ router.post('/', auth, async (req, res) => {
             });
         })
     };
-    const data = await call(profile.onlineJudgeHandle.codeforces);
+
+    const data = await call(req.body.onlineJudgeHandle.codeforces);
     if(data.status !='OK') return res.status(404).send('Handle Invalid');
-    
+
+
+    let profile = new Profile(_.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
+
     profile = await profile.save();
 
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
