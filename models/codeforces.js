@@ -47,6 +47,10 @@ const createCodeforces = async (profileId,handle) => {
         if(err){
             throw err;
         }
+        if(JSON.parse(body).status != 'OK')
+        {
+            throw new Error('Invalid Handle');
+        }
         const data = JSON.parse(body).result[0];
         let codeforces = new Codeforces(_.pick(data, ['rating', 'maxRating', 'rank', 'maxRank']));
         
@@ -87,8 +91,6 @@ const updateCodeforces = async (id, handle) => {
                 solvedProblemCount.add(`${sub.contestId}${sub.problem.index}`);
             }
         }
-        console.log(id);
-        console.log({solvedProblem: solvedProblemCount.size, totalContest: contestCount.size});
         await Codeforces.findByIdAndUpdate(id, {solvedProblem: solvedProblemCount.size, totalContest: contestCount.size});
         
     });

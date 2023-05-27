@@ -16,7 +16,6 @@ router.get('/me', async (req, res) => {
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
     let profile = await Profile.findById(jwtDecoded.profileId);
 
-    console.log(profile);
     const codeforces = await Codeforces.findById(profile.codeforcesId);
     const date = codeforces.updated;
     const currentDate = new Date(Date.now());
@@ -30,7 +29,7 @@ router.get('/me', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    const profile = await Profile.findById(id);
+    const profile = await Profile.findById(req.params.id);
 
     const codeforces = await Codeforces.findById(profile.codeforcesId);
     const date = codeforces.updated;
