@@ -22,7 +22,8 @@ const userSchema = new mongoose.Schema({
         require: true
     },
     profileId:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Profile',
         required:true
     },
     isUpdated: {

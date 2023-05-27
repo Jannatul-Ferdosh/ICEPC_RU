@@ -91,7 +91,7 @@ router.post('/', auth, async (req, res) => {
     profile = await profile.save();
 
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id},{new:true});
+    let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id, isUpdated: true},{new:true});
 
 
     return res.send(user);
