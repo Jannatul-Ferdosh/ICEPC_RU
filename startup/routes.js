@@ -8,6 +8,8 @@ const contests = require('../routes/contests');
 const profiles = require('../routes/profiles');
 const tests = require('../routes/tests');
 const programmers = require('../routes/programmers');
+const about = require('../routes/about');
+const photos = require('../routes/photos');
 
 
 
@@ -24,6 +26,8 @@ module.exports = function(app)
     app.use('/api/contests', contests);
     app.use('/api/profiles', profiles);
     app.use('/api/programmers', programmers);
+    app.use('/api/about', about);
+    app.use('/api/gallery', photos);
 
 
     app.use('/api/tests', tests);
