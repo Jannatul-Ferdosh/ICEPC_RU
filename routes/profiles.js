@@ -8,13 +8,35 @@ const jwt = require('jsonwebtoken');
 const {Profile, validateProfile} = require('../models/profile');
 const express = require('express');
 const { User } = require('../models/user');
-const { createCodeforces, updateCodeforces } = require('../models/codeforces');
+const { createCodeforces, updateCodeforces, Codeforces } = require('../models/codeforces');
 const router = express.Router();
 
 
 router.get('/me', async (req, res) => {
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
     const profile = await Profile.findById(jwtDecoded.profileId);
+
+    const codeforces = await Codeforces.findById(profile.codeforcesId);
+    const date = codeforces.updated;
+    const currentDate = new Date(Date.now());
+    if(codeforces.solvedProblem ===-1 || date.getDate() != currentDate.getDate() || date.getMonth() != currentDate.getMonth() || date.getFullYear() != currentDate.getFullYear())
+    {
+        await updateCodeforces(codeforces._id, profile.onlineJudgeHandle.codeforces);
+    }
+    if(!profile) return res.status(404).send('The Profile with the given id is not found');
+    res.send(profile);
+});
+
+router.get('/:id', async (req, res) => {
+    const profile = await Profile.findById(id);
+
+    const codeforces = await Codeforces.findById(profile.codeforcesId);
+    const date = codeforces.updated;
+    const currentDate = new Date(Date.now());
+    if(codeforces.solvedProblem ===-1 || date.getDate() != currentDate.getDate() || date.getMonth() != currentDate.getMonth() || date.getFullYear() != currentDate.getFullYear())
+    {
+        await updateCodeforces(codeforces._id, profile.onlineJudgeHandle.codeforces);
+    }
 
     if(!profile) return res.status(404).send('The Profile with the given id is not found');
     res.send(profile);
@@ -92,9 +114,9 @@ router.post('/', auth, async (req, res) => {
     profile = await profile.save();
 
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    createCodeforces(jwtDecoded._id, profile.onlineJudgeHandle.codeforces);
-    let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id, isUpdated: true},{new:true});
+    createCodeforces(profile._id, profile.onlineJudgeHandle.codeforces);
 
+    let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id, isUpdated: true},{new:true});
     const token = user.generateAuthToken();
 
     return res.send(token);
@@ -112,9 +134,7 @@ router.put('/:id', auth, async (req, res) => {
     profile = await Profile.findByIdAndUpdate(req.params.id, _.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']), {new:true});
     if(!profile) return res.status(404).send('The profile with the given id is not found');
 
-    const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    const user = await User.findById(jwtDecoded._id);
-    updateCodeforces(user.codeforcesId, profile.onlineJudgeHandle.codeforces);
+    updateCodeforces(profile.codeforcesId, profile.onlineJudgeHandle.codeforces);
 
     return res.send(profile);
 });

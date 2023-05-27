@@ -6,25 +6,29 @@ const fetchUrl = require('fetch').fetchUrl;
 const cf = require('../utils/cfcustom');
 
 router.get('/', async (req, res) => {
-    // fetchUrl('https://codeforces.com/api/user.info?handles=asm_atikur', (err, meta, body) => {
+    const cfUrl = 'https://codeforces.com/api/';
+    
+    fetchUrl(`${cfUrl}user.status?handle=asm_atikur`, async (err, meta, body) => {
+        if(err) throw err;
 
-    //     const data = JSON.parse(body).result[0];
-    //     console.log(data.maxRating);
-
-    //     return res.send(JSON.parse(body));
-    // });
-
-    // const user = await User.findById('6470c7a7c26911e685efb84c').populate({
-    //     path: 'profileId',
-    //     select: 'name'
-    // });
-
-    // return res.send(user);
-
-    const ret = await cf.getData('asm_atikur');
-
-
-    return res.send(ret);
+        const data = JSON.parse(body)['result'];
+        const contestCount = new Set();
+        const solvedProblemCount = new Set();
+        for(let i in data){
+            let sub = data[i];
+            if(sub.author.participantType ==='CONTESTANT')
+            {
+                contestCount.add(sub.contestId);
+            }
+            if(sub.verdict ==='OK')
+            {
+                solvedProblemCount.add(`${sub.contestId}${sub.problem.index}`);
+            }
+        }
+        console.log(contestCount.size);
+        console.log(solvedProblemCount.size);
+        
+    });
 
 });
 

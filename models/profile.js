@@ -58,7 +58,13 @@ const profileSchema =new Schema({
         vjudge: {
             type: String
         }
-    })
+    }),
+    codeforcesId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Codeforces',
+        required: true,
+        default: "64718aa3cde6d3c575b0f442"
+    }
 });
 
 
@@ -86,7 +92,8 @@ function validateProfile(profile)
         onlineJudgeHandle: Joi.object({
             codeforces: Joi.string(),
             vjudge: Joi.string()
-        })
+        }),
+        codeforcesId: Joi.objectId().optional(),
 
      });
 

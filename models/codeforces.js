@@ -2,7 +2,7 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 const fetchUrl = require('fetch').fetchUrl;
 const _ = require('lodash');
-const { User } = require('./user');
+const { Profile } = require('./profile');
 
 const Schema = mongoose.Schema;
 
@@ -26,7 +26,7 @@ const codeforcesSchema =new Schema({
     },
     solvedProblem: {
         type: Number,
-        default:0
+        default:-1
     },
     totalContest: {
         type: Number,
@@ -41,7 +41,7 @@ const codeforcesSchema =new Schema({
 
 const Codeforces = mongoose.model('Codeforces', codeforcesSchema);
 
-const createCodeforces = async (userId,handle) => {
+const createCodeforces = async (profileId,handle) => {
     const cfUrl = 'https://codeforces.com/api/';
     fetchUrl(`${cfUrl}user.info?handles=${handle}`, async (err, meta, body) => {
         if(err){
@@ -52,22 +52,45 @@ const createCodeforces = async (userId,handle) => {
         
         codeforces = await codeforces.save();
 
-        await User.findByIdAndUpdate(userId,{codeforcesId : codeforces._id},{new:true});
-        
+        await Profile.findByIdAndUpdate(profileId,{codeforcesId : codeforces._id},{new:true});
+
     });
-    
+
 
 };
 
 const updateCodeforces = async (id, handle) => {
+
     const cfUrl = 'https://codeforces.com/api/';
     fetchUrl(`${cfUrl}user.info?handles=${handle}`, async (err, meta, body) => {
         if(err){
             throw err;
         }
-
         const data = JSON.parse(body).result[0];
-        await Codeforces.findByIdAndUpdate(id, _.pick(data, ['rating', 'maxRating', 'rank', 'maxRank']));
+        data.updated = new Date(Date.now());
+        await Codeforces.findByIdAndUpdate(id, _.pick(data, ['rating', 'maxRating', 'rank', 'maxRank', 'updated']));
+    });
+    fetchUrl(`${cfUrl}user.status?handle=${handle}`, async (err, meta, body) => {
+        if(err) throw err;
+
+        const data = JSON.parse(body)['result'];
+        const contestCount = new Set();
+        const solvedProblemCount = new Set();
+        for(let i in data){
+            let sub = data[i];
+            if(sub.author.participantType ==='CONTESTANT')
+            {
+                contestCount.add(sub.contestId);
+            }
+            if(sub.verdict ==='OK')
+            {
+                solvedProblemCount.add(`${sub.contestId}${sub.problem.index}`);
+            }
+        }
+        console.log(id);
+        console.log({solvedProblem: solvedProblemCount.size, totalContest: contestCount.size});
+        await Codeforces.findByIdAndUpdate(id, {solvedProblem: solvedProblemCount.size, totalContest: contestCount.size});
+        
     });
     
 

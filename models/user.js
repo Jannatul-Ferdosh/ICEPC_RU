@@ -27,12 +27,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         default:"64718aa3cde6d3c575b0f442"
     },
-    codeforcesId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Codeforces',
-        required: true,
-        default: "64718aa3cde6d3c575b0f442"
-    },
     isUpdated: {
         type: Boolean,
         default: false
@@ -49,7 +43,7 @@ const userSchema = new mongoose.Schema({
 
 
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({_id: this._id,sid: this.sid,profileId: this.profileId, isAdmin: this.isAdmin, isSuperAdmin: this.isSuperAdmin, isUpdated: this.isUpdated}, process.env.jwtPrivateKey);
+    const token = jwt.sign({_id: this._id,sid: this.sid, profileId: this.profileId, isAdmin: this.isAdmin, isSuperAdmin: this.isSuperAdmin, isUpdated: this.isUpdated}, process.env.jwtPrivateKey);
     return token;
 }
 
@@ -62,7 +56,6 @@ function validateUser(user)
         email: Joi.string().required().email(),
         password: Joi.string().required(),
         profileId: Joi.objectId().optional(),
-        codeforcesId: Joi.objectId().optional(),
         
     });
 
