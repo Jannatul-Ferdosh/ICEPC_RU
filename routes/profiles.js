@@ -14,8 +14,9 @@ const router = express.Router();
 
 router.get('/me', async (req, res) => {
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    const profile = await Profile.findById(jwtDecoded.profileId);
+    let profile = await Profile.findById(jwtDecoded.profileId);
 
+    console.log(profile);
     const codeforces = await Codeforces.findById(profile.codeforcesId);
     const date = codeforces.updated;
     const currentDate = new Date(Date.now());
@@ -23,6 +24,7 @@ router.get('/me', async (req, res) => {
     {
         await updateCodeforces(codeforces._id, profile.onlineJudgeHandle.codeforces);
     }
+    profile = await Profile.findById(jwtDecoded.profileId).populate('codeforcesId');
     if(!profile) return res.status(404).send('The Profile with the given id is not found');
     res.send(profile);
 });
