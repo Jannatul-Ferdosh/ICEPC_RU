@@ -24,7 +24,14 @@ const userSchema = new mongoose.Schema({
     profileId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Profile',
-        required:true
+        required: true,
+        default:"64718aa3cde6d3c575b0f442"
+    },
+    codeforcesId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Codeforces',
+        required: true,
+        default: "64718aa3cde6d3c575b0f442"
     },
     isUpdated: {
         type: Boolean,
@@ -54,7 +61,9 @@ function validateUser(user)
         sid: Joi.string().min(10).max(10).required(),
         email: Joi.string().required().email(),
         password: Joi.string().required(),
-        profileId: Joi.objectId().required()
+        profileId: Joi.objectId().optional(),
+        codeforcesId: Joi.objectId().optional(),
+        
     });
 
     return schema.validate(user);
