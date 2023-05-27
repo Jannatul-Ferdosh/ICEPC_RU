@@ -12,16 +12,14 @@ const router = express.Router();
 
 
 router.get('/', async (req, res) => {
-    const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    
-    let programmers = await User.find().populate([{path:'profileId', select: ['name','onlineJudgeHandle'], populate: {path:'codeforcesId'}}]).select(['sid', 'email']);
-
+    let programmers = await User.find().populate([{path:'profileId', select: ['name','onlineJudgeHandle','codeforcesId'],populate:{path: 'onlineJudgeHandle'}, populate: {path:'codeforcesId'}}]).select(['sid', 'email']);
+    console.log(programmers);
     programmers.forEach((programmer) => {
-        const date = programmer.codeforcesId.updated;
+        const date = programmer.profileId.codeforcesId.updated;
         const currentDate = new Date(Date.now());
-        if(programmer.codeforcesId.solvedProblem ===-1 || date.getDate() != currentDate.getDate() || date.getMonth() != currentDate.getMonth() || date.getFullYear() != currentDate.getFullYear())
+        if(programmer.profileId.codeforcesId.solvedProblem ===-1 || date.getDate() != currentDate.getDate() || date.getMonth() != currentDate.getMonth() || date.getFullYear() != currentDate.getFullYear())
         {
-            updateCodeforces(programmer.codeforcesId._id, programmer.profileId.onlineJudgeHandle.codeforces);
+            updateCodeforces(programmer.profileId.codeforcesId._id, programmer.profileId.onlineJudgeHandle.codeforces);
         }
     });
     programmers = await User.find().populate([{path:'profileId', select: ['name','onlineJudgeHandle'], populate: {path:'codeforcesId'}}]).select(['sid', 'email']);
