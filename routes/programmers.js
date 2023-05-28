@@ -13,7 +13,6 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     let programmers = await User.find().populate([{path:'profileId', select: ['name','onlineJudgeHandle','codeforcesId'],populate:{path: 'onlineJudgeHandle'}, populate: {path:'codeforcesId'}}]).select(['sid', 'email']);
-    console.log(programmers);
     programmers.forEach((programmer) => {
         const date = programmer.profileId.codeforcesId.updated;
         const currentDate = new Date(Date.now());

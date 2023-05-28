@@ -21,4 +21,13 @@ router.post('/', async(req, res) =>{
     return res.send(about);
 });
 
+router.put('/:id', async(req, res) =>{
+    const {error} = validateAbout(req.body);
+    if(error) return res.status(404).send(error.details[0].message);
+
+    let about = await About.findByIdAndUpdate(req.params.id, _.pick(req.body, ['committee', 'studentCommittee']));
+
+    return res.send(about);
+});
+
 module.exports = router;

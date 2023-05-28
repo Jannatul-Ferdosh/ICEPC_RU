@@ -4,22 +4,46 @@ const mongoose = require('mongoose');
 
 const aboutSchema = new mongoose.Schema({
     committee : new mongoose.Schema({
-        president: {
-            type: String,
-            required: true
-        },
-        vicePresident1: {
-            type: String,
-            required: true
-        },
-        vicePresident2:{
-            type: String,
-            required: true
-        },
-        treasurer: {
-            type: String,
-            required: true
-        }
+        president: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            designation: {
+                type: String,
+                required: true
+            }
+        }),
+        vicePresident1: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            designation: {
+                type: String,
+                required: true
+            }
+        }),
+        vicePresident2:new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            designation: {
+                type: String,
+                required: true
+            }
+        }),
+        treasurer: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            designation: {
+                type: String,
+                required: true
+            }
+        })
     }),
     studentCommittee: new mongoose.Schema({
         generalSecretary: {
@@ -74,10 +98,22 @@ function validateAbout(about)
 {
     const schema = Joi.object({
         committee: Joi.object({
-            president: Joi.string().required(),
-            vicePresident1: Joi.string().required(),
-            vicePresident2:Joi.string().required(),
-            treasurer: Joi.string().required()
+            president: Joi.object({
+                name: Joi.string().required(),
+                designation: Joi.string().required(),
+            }),
+            vicePresident1: Joi.object({
+                name: Joi.string().required(),
+                designation: Joi.string().required(),
+            }),
+            vicePresident2: Joi.object({
+                name: Joi.string().required(),
+                designation: Joi.string().required(),
+            }),
+            treasurer: Joi.object({
+                name: Joi.string().required(),
+                designation: Joi.string().required(),
+            })
         }),
         studentCommittee: Joi.object({
             generalSecretary: Joi.string().required(),

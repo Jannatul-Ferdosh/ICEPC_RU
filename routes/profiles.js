@@ -10,6 +10,7 @@ const {Profile, validateProfile} = require('../models/profile');
 const express = require('express');
 const { User } = require('../models/user');
 const { createCodeforces, updateCodeforces, Codeforces } = require('../models/codeforces');
+const { HomeData } = require('../models/homeData');
 const router = express.Router();
 
 
@@ -127,6 +128,7 @@ router.post('/', auth, async (req, res) => {
     let profile = new Profile(_.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
 
     profile = await profile.save();
+    await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'programmers' : 1}});
 
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
     await createCodeforces(profile._id, data);
