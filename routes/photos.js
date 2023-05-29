@@ -29,7 +29,8 @@ router.post('/', async (req, res) => {
     const {error} = validatePhoto(req.body);
     if(error) return res.status(404).send(error.details[0].message);
 
-    const photo = new Photo({photoLink: req.body.photoLink, description: req.body.description});
+    const photo = new Photo({photoLink: req.body.photoLink, description: req.body.description, heading: req.body.heading});
+    await photo.save();
     res.send(photo);
 });
 
@@ -37,6 +38,10 @@ router.delete('/:id', async (req, res) => {
     const photo = await Photo.findByIdAndRemove(req.params.id);
 
     if(!photo) return res.status(404).send('The notice with given ID is not found.');
+    const imgPath = './public'+photo.photoLink;
+    fs.unlink(imgPath, (err) => {
+        if(err) throw err;
+    })
 
     res.send(photo);
 });

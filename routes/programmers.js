@@ -12,7 +12,7 @@ const router = express.Router();
 
 
 router.get('/', async (req, res) => {
-    let programmers = await User.find().populate([{path:'profileId', select: ['name','onlineJudgeHandle','codeforcesId'],populate:{path: 'onlineJudgeHandle'}, populate: {path:'codeforcesId'}}]).select(['sid', 'email']);
+    let programmers = await User.find({isUpdated: true}).populate([{path:'profileId', select: ['name','onlineJudgeHandle'], populate: {path:'codeforcesId'}}]).select(['sid', 'email']);
     programmers.forEach((programmer) => {
         const date = programmer.profileId.codeforcesId.updated;
         const currentDate = new Date(Date.now());
@@ -21,11 +21,15 @@ router.get('/', async (req, res) => {
             updateCodeforces(programmer.profileId.codeforcesId._id, programmer.profileId.onlineJudgeHandle.codeforces);
         }
     });
-    programmers = await User.find().populate([{path:'profileId', select: ['name','onlineJudgeHandle'], populate: {path:'codeforcesId'}}]).select(['sid', 'email']);
+    programmers = await User.find({isUpdated:true}).populate([{path:'profileId',select: ['name'], populate: {path:'codeforcesId'}}]).select(['sid', 'email']);
 
     return res.send(programmers);
 });
 
+router.get('/list', async (req, res) => {
+    let programmers = await User.find({isUpdated: true}).populate([{path:'profileId', select: ['name']}]).select(['sid']);
+    return res.send(programmers);
+});
 
 
 module.exports = router;

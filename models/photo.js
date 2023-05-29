@@ -10,7 +10,12 @@ const photoSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        maxlength: 250
+    },
+    heading: {
+        type: String,
+        required:true
     }
 });
 
@@ -21,7 +26,8 @@ function validatePhoto(photo)
 {
     const schema = Joi.object({
         photoLink: Joi.string().required(),
-        description: Joi.string().required()
+        description: Joi.string().required().max(250),
+        heading: Joi.string().required()
     });
 
     return schema.validate(photo);
