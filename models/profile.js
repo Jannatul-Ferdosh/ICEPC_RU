@@ -64,6 +64,12 @@ const profileSchema =new Schema({
         ref: 'Codeforces',
         required: true,
         default: "64718aa3cde6d3c575b0f442"
+    },
+    sid : {
+        type: String,
+        required: true,
+        minlength : 10,
+        maxlength : 10
     }
 });
 
@@ -73,7 +79,9 @@ const Profile = mongoose.model('Profile', profileSchema);
 function validateProfile(profile)
 {
      const schema = Joi.object({
+        sid: Joi.string().min(10).max(10).required(),
         name: Joi.string().required().min(3),
+        
         profilePicture : Joi.optional(),
         bio : Joi.string().required().min(20),
         currentStatus: Joi.string().required(),

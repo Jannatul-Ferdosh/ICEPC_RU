@@ -108,6 +108,8 @@ router.put('/profilePicture/:id', auth, async (req, res) => {
 });
 
 router.post('/', auth, async (req, res) => {
+    const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
+    req.body.sid = jwtDecoded.sid;
     const {error} = validateProfile(req.body);
     if(error) return res.status(404).send(error.details[0].message);
 
@@ -123,14 +125,11 @@ router.post('/', auth, async (req, res) => {
 
     const data = await call(req.body.onlineJudgeHandle.codeforces);
     if(data.status !='OK') return res.status(404).send('Handle Invalid');
-
-
-    let profile = new Profile(_.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
+    let profile = new Profile(_.pick(req.body, [ 'name', 'sid','profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
 
     profile = await profile.save();
     await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'programmers' : 1}});
 
-    const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
     await createCodeforces(profile._id, data);
 
     let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id, isUpdated: true},{new:true});
