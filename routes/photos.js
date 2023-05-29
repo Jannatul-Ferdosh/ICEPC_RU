@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', async (req,res) => {
     const photos = await Photo.find();
-    return photos;
+    return res.send(photos);
 });
 
 router.post('/', async (req, res) => {

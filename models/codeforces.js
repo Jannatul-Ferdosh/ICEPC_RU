@@ -1,92 +1,109 @@
-const Joi = require('joi');
-const mongoose = require('mongoose');
-const fetchUrl = require('fetch').fetchUrl;
-const _ = require('lodash');
-const { Profile } = require('./profile');
+const Joi = require("joi");
+const mongoose = require("mongoose");
+const _ = require("lodash");
+const fetch = require("node-fetch");
+const { Profile } = require("./profile");
 
 const Schema = mongoose.Schema;
 
-
-const codeforcesSchema =new Schema({
+const codeforcesSchema = new Schema({
     rating: {
         type: Number,
-        default: 0
+        default: 0,
     },
     maxRating: {
         type: Number,
-        default:0
+        default: 0,
     },
     rank: {
         type: String,
-        default: 'Newbie'
+        default: "Newbie",
     },
     maxRank: {
         type: String,
-        default: 'Newbie'
+        default: "Newbie",
     },
     solvedProblem: {
         type: Number,
-        default:-1
+        default: -1,
     },
     totalContest: {
         type: Number,
-        default:0
+        default: 0,
     },
-    updated:{
+    updated: {
         type: Date,
-        default: Date.now()
-    }
+        default: Date.now(),
+    },
 });
 
-
-const Codeforces = mongoose.model('Codeforces', codeforcesSchema);
+const Codeforces = mongoose.model("Codeforces", codeforcesSchema);
 
 const createCodeforces = async (profileId, data) => {
-    
-        let codeforces = new Codeforces(_.pick(data, ['rating', 'maxRating', 'rank', 'maxRank']));
-        
+    try {
+        let codeforces = new Codeforces(
+            _.pick(data, ["rating", "maxRating", "rank", "maxRank"])
+        );
         codeforces = await codeforces.save();
-
-        await Profile.findByIdAndUpdate(profileId,{codeforcesId : codeforces._id},{new:true});
+        await Profile.findByIdAndUpdate(
+            profileId,
+            { codeforcesId: codeforces._id },
+            { new: true }
+        );
+    } catch (error) {
+        console.error("Error creating Codeforces data:", error);
+    }
 };
 
 const updateCodeforces = async (id, handle) => {
-
-    const cfUrl = 'https://codeforces.com/api/';
-    fetchUrl(`${cfUrl}user.info?handles=${handle}`, async (err, meta, body) => {
-        if(err){
-            throw err;
-        }
-        const data = JSON.parse(body).result[0];
+    const cfUrl = "https://codeforces.com/api/";
+    try {
+        const response = await fetch(`${cfUrl}user.info?handles=${handle}`);
+        const userInfo = await response.json();
+        const data = userInfo.result[0];
         data.updated = new Date(Date.now());
-        await Codeforces.findByIdAndUpdate(id, _.pick(data, ['rating', 'maxRating', 'rank', 'maxRank', 'updated']));
-    });
-    fetchUrl(`${cfUrl}user.status?handle=${handle}`, async (err, meta, body) => {
-        if(err) throw err;
+        await Codeforces.findByIdAndUpdate(
+            id,
+            _.pick(data, ["rating", "maxRating", "rank", "maxRank", "updated"])
+        );
+    } catch (error) {
+        console.error("Error updating Codeforces data:", error);
+        return;
+    }
+    try {
+        const submissionsResponse = await fetch(
+            `${cfUrl}user.status?handle=${handle}`
+        );
+        const submissionsData = await submissionsResponse.json();
+        const submissions = submissionsData.result;
 
-        const data = JSON.parse(body)['result'];
-        const contestCount = new Set();
         const solvedProblemCount = new Set();
-        for(let i in data){
-            let sub = data[i];
-            if(sub.author.participantType ==='CONTESTANT')
-            {
-                contestCount.add(sub.contestId);
-            }
-            if(sub.verdict ==='OK')
-            {
-                solvedProblemCount.add(`${sub.contestId}${sub.problem.index}`);
+        for (let i in submissions) {
+            const sub = submissions[i];
+            if (sub.verdict === "OK") {
+                solvedProblemCount.add(
+                    sub.problem.id + sub.problem.index + sub.problem.name
+                );
             }
         }
-        await Codeforces.findByIdAndUpdate(id, {solvedProblem: solvedProblemCount.size, totalContest: contestCount.size});
-        
-    });
-    
+        const contestResponse = await fetch(
+            `${cfUrl}user.rating?handle=${handle}`
+        );
+        const contestData = await contestResponse.json();
+        const contests = contestData.result;
 
+        const ratedContestCount = contests.length;
+
+        await Codeforces.findByIdAndUpdate(id, {
+            solvedProblem: solvedProblemCount.size,
+            totalContest: ratedContestCount,
+        });
+    } catch (error) {
+        console.error("Error updating Codeforces data:", error);
+    }
 };
 
-
-
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 exports.Codeforces = Codeforces;
 exports.updateCodeforces = updateCodeforces;
