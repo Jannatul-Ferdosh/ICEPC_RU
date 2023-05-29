@@ -46,48 +46,116 @@ const aboutSchema = new mongoose.Schema({
         })
     }),
     studentCommittee: new mongoose.Schema({
-        generalSecretary: {
-            type: String,
-            required: true
-        },
-        assistantGeneralSecretary: {
-            type: String,
-            required: true
-        },
-        officeSecretary: {
-            type: String,
-            required: true
-        },
-        assistantOfficeSecretary: {
-            type: String,
-            required: true
-        },
-        financeSecretary: {
-            type: String,
-            required: true
-        },
-        assistantFinanceSecretary: {
-            type: String,
-            required: true
-        },
-        publicationSecretary: {
-            type: String,
-            required: true
-        },
-        assistantPublicationSecretary: {
-            type: String,
-            required: true
-        },
-        socialWelfareSecretary: {
-            type: String,
-            required: true
-        },
-        assistantSocialWelfareSecretary: {
-            type: String,
-            required: true
-        }
-        
-        
+        generalSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        assistantGeneralSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        officeSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        assistantOfficeSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        financeSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        assistantFinanceSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        publicationSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        assistantPublicationSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        socialWelfareSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        assistantSocialWelfareSecretary: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }) 
     })
 });
 
@@ -116,16 +184,46 @@ function validateAbout(about)
             })
         }),
         studentCommittee: Joi.object({
-            generalSecretary: Joi.string().required(),
-            assistantGeneralSecretary:Joi.string().required(),
-            officeSecretary: Joi.string().required(),
-            assistantOfficeSecretary: Joi.string().required(),
-            financeSecretary: Joi.string().required(),
-            assistantFinanceSecretary: Joi.string().required(),
-            publicationSecretary: Joi.string().required(),
-            assistantPublicationSecretary: Joi.string().required(),
-            socialWelfareSecretary: Joi.string().required(),
-            assistantSocialWelfareSecretary: Joi.string().required()
+            generalSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            assistantGeneralSecretary:Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            officeSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            assistantOfficeSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            financeSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            assistantFinanceSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            publicationSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            assistantPublicationSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            socialWelfareSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
+            assistantSocialWelfareSecretary: Joi.object({
+                name: Joi.string().required(),
+                profileId: Joi.objectId().required()
+            }),
         })
         
     });
