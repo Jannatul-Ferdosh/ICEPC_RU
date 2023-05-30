@@ -13,16 +13,39 @@ const contestSchema =new Schema({
         required: true,
         minlength: 10
     },
-    participant1: {
-        type: String,
-        required: true
-    },
-    participant2: {
-        type: String,
-    },
-    participant3: {
-        type: String,
-    },
+    participant1: new mongoose.Schema({
+        name: {
+            type: String,
+            required: true
+        },
+        profileId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Profile',
+            required: true
+        }
+    }),
+    participant2: new mongoose.Schema({
+        name: {
+            type: String,
+            required: true
+        },
+        profileId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Profile',
+            required: true
+        }
+    }),
+    participant3: new mongoose.Schema({
+        name: {
+            type: String,
+            required: true
+        },
+        profileId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Profile',
+            required: true
+        }
+    }),
     description: {
         type: String,
         required: true,
@@ -43,6 +66,11 @@ const contestSchema =new Schema({
     date: {
         type: Date,
         required: true
+    },
+    contestType: {
+        type: String,
+        enum : ['ICPC', 'IUPC', 'IDPC'],
+        required: true
     }
 });
 
@@ -54,14 +82,24 @@ function validateContest(contest)
      const schema = Joi.object({
         imgLink: Joi.array().items(Joi.string()),
         header : Joi.string().min(10).required(),
-        participant1: Joi.string().required().min(3),
-        participant2: Joi.optional(),
-        participant3: Joi.optional(),
+        participant1: Joi.object({
+            name: Joi.string().required(),
+            profileId: Joi.objectId().required()
+        }),
+        participant2: Joi.object({
+            name: Joi.string().required(),
+            profileId: Joi.objectId().required()
+        }),
+        participant3: Joi.object({
+            name: Joi.string().required(),
+            profileId: Joi.objectId().required()
+        }),
         description: Joi.string().min(10).required(),
         rank: Joi.string().min(1).required(),
         link: Joi.optional(),
         date: Joi.date().required(),
-        isApproved : Joi.boolean().required()
+        isApproved : Joi.boolean().required(),
+        contestType: Joi.string().valid('ICPC', 'IUPC', 'IDPC').required()
      });
 
      return schema.validate(contest);

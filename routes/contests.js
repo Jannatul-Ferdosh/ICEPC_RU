@@ -17,6 +17,11 @@ router.get('/', async (req, res) => {
 
 
 router.post('/', auth, async (req, res) => {
+
+    req.body.participant1 = JSON.parse(req.body.participant1);
+    req.body.participant2 = JSON.parse(req.body.participant2);
+    req.body.participant3 = JSON.parse(req.body.participant3);
+
     const {error} = validateContest(req.body);
     if(error) return res.status(404).send(error.details[0].message);
 
@@ -74,7 +79,7 @@ router.post('/', auth, async (req, res) => {
     req.body.imgLink.push(imgPath);
 
 
-    let contest = new Contest(_.pick(req.body, [ 'imgLink', 'header', 'participant1','participant2','participant3', 'description', 'rank', 'link','date','isApproved']));
+    let contest = new Contest(_.pick(req.body, [ 'imgLink', 'header', 'participant1','participant2','participant3', 'description', 'rank', 'link','date','isApproved','contestType']));
 
     contest = await contest.save();
     return res.send(contest);

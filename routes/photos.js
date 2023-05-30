@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
     });
 
     let imgPath = '/images/gallery/'+imgName;
-    req.body.imgLink = imgPath;
+    req.body.photoLink = imgPath;
 
 
     const {error} = validatePhoto(req.body);

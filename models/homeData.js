@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 const homeDataSchema = new mongoose.Schema({
-    ipuc: {
+    IUPC: {
         type: Number,
         default: 0
     },
-    icpc: {
+    ICPC: {
         type: Number,
         default: 0
     },
-    idpc: {
+    IDPC: {
         type: Number,
         default: 0
     },
