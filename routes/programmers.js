@@ -1,10 +1,4 @@
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-const _ = require('lodash');
-const jwt = require('jsonwebtoken');
-
-const { createCodeforces, updateCodeforces } = require('../models/codeforces');
-const { Profile } = require('../models/profile');
+const { updateCodeforces } = require('../models/codeforces');
 const { User } = require('../models/user');
 const express = require('express');
 const router = express.Router();
@@ -26,7 +20,7 @@ router.get('/', async (req, res) => {
       date.getMonth() !== currentDate.getMonth() ||
       date.getFullYear() !== currentDate.getFullYear()
     ) {
-      await delay(2500); // Delay before making the next API call
+      await delay(3000); // Delay before making the next API call
       updateCodeforces(programmer.profileId.codeforcesId._id, programmer.profileId.onlineJudgeHandle.codeforces);
     }
   }

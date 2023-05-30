@@ -4,7 +4,6 @@ const admin = require('../middleware/admin');
 const _ = require('lodash');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const fetchUrl = require('fetch').fetchUrl;
 
 const {Profile, validateProfile} = require('../models/profile');
 const express = require('express');
@@ -114,16 +113,16 @@ router.post('/', auth, async (req, res) => {
     if(error) return res.status(404).send(error.details[0].message);
 
     req.body.profilePicture = "";
-    async function call(handle){
-        return await new Promise(resolve => {
-            fetchUrl(`https://codeforces.com/api/user.info?handles=${handle}`, async (err, meta, body) => {
-                const data = JSON.parse(body);
-                resolve(data);
-            });
-        })
-    };
 
-    const data = await call(req.body.onlineJudgeHandle.codeforces);
+    const cfUrl = "https://codeforces.com/api/";
+    let data;
+    try {
+        const response = await fetch(`${cfUrl}user.info?handles=${req.body.onlineJudgeHandle.codeforces}`);
+        data = await response.json();
+    } catch (error) {
+        console.error("Error updating Codeforces data:", error);
+        return;
+    }
     if(data.status !='OK') return res.status(404).send('Handle Invalid');
     let profile = new Profile(_.pick(req.body, [ 'name', 'sid','profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
 
@@ -147,15 +146,14 @@ router.put('/:id', auth, async (req, res) => {
 
     req.body.profilePicture = profile.profilePicture;
 
-    async function call(handle){
-        return await new Promise(resolve => {
-            fetchUrl(`https://codeforces.com/api/user.info?handles=${handle}`, async (err, meta, body) => {
-                const data = JSON.parse(body);
-                resolve(data);
-            });
-        })
-    };
-    const data = await call(req.body.onlineJudgeHandle.codeforces);
+    let data;
+    try {
+        const response = await fetch(`${cfUrl}user.info?handles=${req.body.onlineJudgeHandle.codeforces}`);
+        data = await response.json();
+    } catch (error) {
+        console.error("Error updating Codeforces data:", error);
+        return;
+    }
     if(data.status !='OK') return res.status(404).send('Handle Invalid');
 
     profile = await Profile.findByIdAndUpdate(req.params.id, _.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']), {new:true});
