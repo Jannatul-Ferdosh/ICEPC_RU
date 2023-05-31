@@ -4,13 +4,14 @@ const router = express.Router();
 
 
 router.get('/', async (req,res) => {
-    const homeData = await HomeData.findById(process.env.homeData);
-    res.send(homeData);
+    let homeData = await HomeData.find();
+    if(!homeData.length)
+    {
+        homeData = new HomeData();
+        await homeData.save();
+        homeData = [homeData];
+    }
+    res.send(homeData[0]);
 });
-
-router.get('/up', async(req,res) =>{
-    const data = await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'programmers' : 1}}, {new:true});
-    res.send(data);
-})
 
 module.exports = router;

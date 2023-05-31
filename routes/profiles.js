@@ -107,13 +107,17 @@ router.put('/profilePicture/:id', auth, async (req, res) => {
 });
 
 router.post('/', auth, async (req, res) => {
+    // Adding sid from user to profile
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
     req.body.sid = jwtDecoded.sid;
+
+    // Validating the post request
     const {error} = validateProfile(req.body);
     if(error) return res.status(404).send(error.details[0].message);
 
     req.body.profilePicture = "";
 
+    // Validating Codeforces handle...
     const cfUrl = "https://codeforces.com/api/";
     let data;
     try {
@@ -124,13 +128,25 @@ router.post('/', auth, async (req, res) => {
         return;
     }
     if(data.status !='OK') return res.status(404).send('Handle Invalid');
+
+    //Creating the profile and saving it
     let profile = new Profile(_.pick(req.body, [ 'name', 'sid','profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
-
     profile = await profile.save();
-    await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'programmers' : 1}});
 
+    // For updating HomeData object 
+    let homeData = await HomeData.find();
+    if(!homeData.length)
+    {
+        homeData = new HomeData();
+        await homeData.save();
+        homeData = [homeData];
+    }
+    await HomeData.findOneAndUpdate({_id: homeData[0]}, {$inc : {'programmers' : 1}});
+    
+    //Creating Codeforces for a profile
     await createCodeforces(profile._id, data);
 
+    //Updating the JWT token and sending to frontend
     let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id, isUpdated: true},{new:true});
     const token = user.generateAuthToken();
 

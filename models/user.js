@@ -55,8 +55,7 @@ function validateUser(user)
         sid: Joi.string().min(10).max(10).required(),
         email: Joi.string().required().email(),
         password: Joi.string().required(),
-        profileId: Joi.objectId().optional(),
-        
+        profileId: Joi.objectId().optional()
     });
 
     return schema.validate(user);

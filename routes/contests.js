@@ -96,10 +96,18 @@ router.put('/approve/:id', auth, async (req, res) => {
     const contest = await Contest.findByIdAndUpdate(req.params.id, {isApproved: req.body.isApproved}, {new: true});
 
     if(!contest) return res.status(404).send('The contest with the given id is not found');
+
+    let homeData = await HomeData.find();
+    if(!homeData.length)
+    {
+        homeData = new HomeData();
+        await homeData.save();
+        homeData = [homeData];
+    }
     
-    if(contest.contestType === 'ICPC') await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'ICPC': 1}});
-    else if(contest.contestType === 'IUPC') await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'IUPC': 1}});
-    else await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'IDPC': 1}});
+    if(contest.contestType === 'ICPC') await HomeData.findOneAndUpdate({_id: homeData._id}, {$inc : {'ICPC': 1}});
+    else if(contest.contestType === 'IUPC') await HomeData.findOneAndUpdate({_id: homeData._id}, {$inc : {'IUPC': 1}});
+    else await HomeData.findOneAndUpdate({_id: homeData._id}, {$inc : {'IDPC': 1}});
 
     await Profile.findByIdAndUpdate(contest.participant1.profileId, {$push : {contests: contest._id}});
     await Profile.findByIdAndUpdate(contest.participant2.profileId, {$push : {contests: contest._id}});

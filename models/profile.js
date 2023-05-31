@@ -82,7 +82,7 @@ const Profile = mongoose.model('Profile', profileSchema);
 
 function validateProfile(profile)
 {
-     const schema = Joi.object({
+    const schema = Joi.object({
         sid: Joi.string().min(10).max(10).required(),
         name: Joi.string().required().min(3),
         
@@ -107,9 +107,9 @@ function validateProfile(profile)
         }),
         codeforcesId: Joi.objectId().optional(),
 
-     });
+    });
 
-     return schema.validate(profile);
+    return schema.validate(profile);
 }
 
 exports.Profile = Profile;
