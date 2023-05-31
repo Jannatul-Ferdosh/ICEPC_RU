@@ -5,6 +5,7 @@ const _ = require('lodash');
 const fs = require('fs');
 
 const {Contest, validateContest} = require('../models/contest');
+const { HomeData } = require('../models/homeData');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -89,6 +90,10 @@ router.put('/approve/:id', auth, async (req, res) => {
     const contest = await Contest.findByIdAndUpdate(req.params.id, {isApproved: req.body.isApproved}, {new: true});
 
     if(!contest) return res.status(404).send('The contest with the given id is not found');
+    
+    if(contest.contestType === 'ICPC') await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'ICPC': 1}});
+    else if(contest.contestType === 'IUPC') await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'IUPC': 1}});
+    else await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'IDPC': 1}});
 
     return res.send(contest);
 });

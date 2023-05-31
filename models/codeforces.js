@@ -59,6 +59,9 @@ const updateCodeforces = async (id, handle) => {
     try {
         const response = await fetch(`${cfUrl}user.info?handles=${handle}`);
         const userInfo = await response.json();
+
+        // console.log(userInfo.status + '1');
+
         const data = userInfo.result[0];
         data.updated = new Date(Date.now());
         await Codeforces.findByIdAndUpdate(
@@ -67,6 +70,9 @@ const updateCodeforces = async (id, handle) => {
         );
     } catch (error) {
         console.error("Error updating Codeforces data:", error);
+
+        // console.log('Not OK' +'1');
+
         return;
     }
     try {
@@ -74,6 +80,9 @@ const updateCodeforces = async (id, handle) => {
             `${cfUrl}user.status?handle=${handle}`
         );
         const submissionsData = await submissionsResponse.json();
+
+        // console.log(submissionsData.status +'2');
+
         const submissions = submissionsData.result;
 
         const solvedProblemCount = new Set();
@@ -89,6 +98,9 @@ const updateCodeforces = async (id, handle) => {
             `${cfUrl}user.rating?handle=${handle}`
         );
         const contestData = await contestResponse.json();
+
+        // console.log(contestData.status + '3');
+
         const contests = contestData.result;
 
         const ratedContestCount = contests.length;
@@ -98,7 +110,8 @@ const updateCodeforces = async (id, handle) => {
             totalContest: ratedContestCount,
         });
     } catch (error) {
-        console.error("Error updating Codeforces data:", error);
+        console.error("Error updating Codeforces data:...", error);
+        // console.log('Not OK' +'2 or 3');
     }
 };
 

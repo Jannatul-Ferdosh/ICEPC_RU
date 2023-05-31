@@ -9,7 +9,7 @@ router.get('/', async (req,res) => {
 });
 
 router.get('/up', async(req,res) =>{
-    const data = await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'programmers' : 1}});
+    const data = await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'programmers' : 1}}, {new:true});
     res.send(data);
 })
 
