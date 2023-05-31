@@ -4,9 +4,10 @@ const admin = require('../middleware/admin');
 const _ = require('lodash');
 const fs = require('fs');
 
-const {Contest, validateContest} = require('../models/contest');
+const { Contest, validateContest } = require('../models/contest');
+const { Profile } = require('../models/profile');
 const { HomeData } = require('../models/homeData');
-const mongoose = require('mongoose');
+
 const express = require('express');
 const router = express.Router();
 
@@ -15,10 +16,13 @@ router.get('/', async (req, res) => {
     const contests = await Contest.find().sort('date');
     res.send(contests);
 });
+router.get('/:id', async (req, res) => {
+    const contest = await Contest.findById(req.params.id);
+    res.send(contest);
+});
 
 
 router.post('/', auth, async (req, res) => {
-
     req.body.participant1 = JSON.parse(req.body.participant1);
     req.body.participant2 = JSON.parse(req.body.participant2);
     req.body.participant3 = JSON.parse(req.body.participant3);
@@ -81,8 +85,10 @@ router.post('/', auth, async (req, res) => {
 
 
     let contest = new Contest(_.pick(req.body, [ 'imgLink', 'header', 'participant1','participant2','participant3', 'description', 'rank', 'link','date','isApproved','contestType']));
-
     contest = await contest.save();
+
+    
+
     return res.send(contest);
 });
 
@@ -94,6 +100,10 @@ router.put('/approve/:id', auth, async (req, res) => {
     if(contest.contestType === 'ICPC') await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'ICPC': 1}});
     else if(contest.contestType === 'IUPC') await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'IUPC': 1}});
     else await HomeData.findOneAndUpdate({_id: process.env.homeData}, {$inc : {'IDPC': 1}});
+
+    await Profile.findByIdAndUpdate(contest.participant1.profileId, {$push : {contests: contest._id}});
+    await Profile.findByIdAndUpdate(contest.participant2.profileId, {$push : {contests: contest._id}});
+    await Profile.findByIdAndUpdate(contest.participant3.profileId, {$push : {contests: contest._id}});
 
     return res.send(contest);
 });

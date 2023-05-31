@@ -70,6 +70,10 @@ const profileSchema =new Schema({
         required: true,
         minlength : 10,
         maxlength : 10
+    },
+    contests: {
+        type: Array,
+        default: []
     }
 });
 
