@@ -141,7 +141,7 @@ router.post('/', auth, async (req, res) => {
         await homeData.save();
         homeData = [homeData];
     }
-    await HomeData.findOneAndUpdate({_id: homeData[0]}, {$inc : {'programmers' : 1}});
+    await HomeData.findOneAndUpdate({_id: homeData[0]._id}, {$inc : {'programmers' : 1}});
     
     //Creating Codeforces for a profile
     await createCodeforces(profile._id, data);
@@ -154,6 +154,9 @@ router.post('/', auth, async (req, res) => {
 });
 
 router.put('/:id', auth, async (req, res) => {
+    const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
+    req.body.sid = jwtDecoded.sid;
+
     const {error} = validateProfile(req.body);
     if(error) return res.status(404).send(error.details[0].message);
 
@@ -162,6 +165,7 @@ router.put('/:id', auth, async (req, res) => {
 
     req.body.profilePicture = profile.profilePicture;
 
+    const cfUrl = "https://codeforces.com/api/";
     let data;
     try {
         const response = await fetch(`${cfUrl}user.info?handles=${req.body.onlineJudgeHandle.codeforces}`);

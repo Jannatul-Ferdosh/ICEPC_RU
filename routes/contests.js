@@ -105,9 +105,9 @@ router.put('/approve/:id', auth, async (req, res) => {
         homeData = [homeData];
     }
     
-    if(contest.contestType === 'ICPC') await HomeData.findOneAndUpdate({_id: homeData._id}, {$inc : {'ICPC': 1}});
-    else if(contest.contestType === 'IUPC') await HomeData.findOneAndUpdate({_id: homeData._id}, {$inc : {'IUPC': 1}});
-    else await HomeData.findOneAndUpdate({_id: homeData._id}, {$inc : {'IDPC': 1}});
+    if(contest.contestType === 'ICPC') await HomeData.findOneAndUpdate({_id: homeData[0]._id}, {$inc : {'ICPC': 1}});
+    else if(contest.contestType === 'IUPC') await HomeData.findOneAndUpdate({_id: homeData[0]._id}, {$inc : {'IUPC': 1}});
+    else await HomeData.findOneAndUpdate({_id: homeData[0]._id}, {$inc : {'IDPC': 1}});
 
     await Profile.findByIdAndUpdate(contest.participant1.profileId, {$push : {contests: contest._id}});
     await Profile.findByIdAndUpdate(contest.participant2.profileId, {$push : {contests: contest._id}});
@@ -129,7 +129,16 @@ router.delete('/:id', auth, async (req, res) => {
 
     contest = await Contest.findByIdAndRemove(req.params.id);
 
-    if(!contest) return res.status(404).send('The contest with the given id is not found');
+    let homeData = await HomeData.find();
+
+    if(contest.contestType === 'ICPC') await HomeData.findOneAndUpdate({_id: homeData[0]._id}, {$inc : {'ICPC': -1}});
+    else if(contest.contestType === 'IUPC') await HomeData.findOneAndUpdate({_id: homeData[0]._id}, {$inc : {'IUPC': -1}});
+    else await HomeData.findOneAndUpdate({_id: homeData[0]._id}, {$inc : {'IDPC': -1}});
+
+    await Profile.findByIdAndUpdate(contest.participant1.profileId, {$pull : {contests: contest._id}});
+    await Profile.findByIdAndUpdate(contest.participant2.profileId, {$pull : {contests: contest._id}});
+    await Profile.findByIdAndUpdate(contest.participant3.profileId, {$pull : {contests: contest._id}});
+    
 
     return res.send(contest);
 });
