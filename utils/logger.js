@@ -2,6 +2,8 @@ require('dotenv').config();
 const { createLogger, transports, format} = require('winston');
 require('winston-mongodb');
 
+
+// Creating loger to show error in a descriptive way and store in database also
 const logger = createLogger({
     transports: [
         new transports.Console({

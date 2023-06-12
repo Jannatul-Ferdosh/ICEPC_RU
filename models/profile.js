@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 
+// Profile schema for a user
 const profileSchema =new Schema({
     name: {
         type: String,
@@ -21,44 +22,53 @@ const profileSchema =new Schema({
         type: String,
         required: true
     },
-    contacts: new Schema({
-        phone: {
-            type: Number,
-            required: true,
-        },
-        email: {
-            type: String,
-            required: true
-        },
-        fbLink: {
-            type: String
-        },
-        linkedinLink: {
-            type: String
-        }
-    }),
-    onlineJudgeLink : new Schema({
-        githubLink: {
-            type: String
-        },
-        stopstalkLink: {
-            type: String
-        },
-        codeforcesLink:{
-            type: String
-        },
-        leetcodeLink: {
-            type: String
-        }
-    }),
-    onlineJudgeHandle : new Schema({
-        codeforces: {
-            type: String
-        },
-        vjudge: {
-            type: String
-        }
-    }),
+    contacts: {
+        type: new Schema({
+            phone: {
+                type: Number,
+                required: true,
+            },
+            email: {
+                type: String,
+                required: true
+            },
+            fbLink: {
+                type: String
+            },
+            linkedinLink: {
+                type: String
+            }
+        }),
+        required: true
+    },
+    onlineJudgeLink : {
+        type: new Schema({
+            githubLink: {
+                type: String
+            },
+            stopstalkLink: {
+                type: String
+            },
+            codeforcesLink:{
+                type: String
+            },
+            leetcodeLink: {
+                type: String
+            }
+        }),
+        required: true
+    },
+    onlineJudgeHandle : {
+        type: new Schema({
+            codeforces: {
+                type: String
+            },
+            vjudge: {
+                type: String
+            }
+        }),
+        required: true
+    },
     codeforcesId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Codeforces',
@@ -80,6 +90,7 @@ const profileSchema =new Schema({
 
 const Profile = mongoose.model('Profile', profileSchema);
 
+// Validating data with joi module
 function validateProfile(profile)
 {
     const schema = Joi.object({
@@ -94,17 +105,17 @@ function validateProfile(profile)
             email: Joi.string().email().required(),
             fbLink: Joi.string(),
             linkedinLink: Joi.string()
-        }),
+        }).required(),
         onlineJudgeLink : Joi.object({
             githubLink: Joi.string(),
             stopstalkLink: Joi.string(),
             codeforcesLink:Joi.string(),
             leetcodeLink: Joi.string()
-        }),
+        }).required(),
         onlineJudgeHandle: Joi.object({
             codeforces: Joi.string(),
             vjudge: Joi.string()
-        }),
+        }).required(),
         codeforcesId: Joi.objectId().optional(),
 
     });

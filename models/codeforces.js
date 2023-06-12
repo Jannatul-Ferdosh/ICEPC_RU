@@ -5,6 +5,7 @@ const { Profile } = require("./profile");
 
 const Schema = mongoose.Schema;
 
+// databse schema 
 const codeforcesSchema = new Schema({
     rating: {
         type: Number,
@@ -38,6 +39,7 @@ const codeforcesSchema = new Schema({
 
 const Codeforces = mongoose.model("Codeforces", codeforcesSchema);
 
+// Creating a codeforces for a new profile.
 const createCodeforces = async (profileId, data) => {
     try {
         let codeforces = new Codeforces(
@@ -54,9 +56,11 @@ const createCodeforces = async (profileId, data) => {
     }
 };
 
+// Updating a created codeforces database
 const updateCodeforces = async (id, handle) => {
     const cfUrl = "https://codeforces.com/api/";
     try {
+        // Upadating user info.
         const response = await fetch(`${cfUrl}user.info?handles=${handle}`);
         const userInfo = await response.json();
 
@@ -76,6 +80,7 @@ const updateCodeforces = async (id, handle) => {
         return;
     }
     try {
+        // Updating total solved problem count and total participated contest list from all submission of a user.
         const submissionsResponse = await fetch(
             `${cfUrl}user.status?handle=${handle}`
         );
@@ -85,6 +90,7 @@ const updateCodeforces = async (id, handle) => {
 
         const submissions = submissionsData.result;
 
+        // Counting all solved problem 
         const solvedProblemCount = new Set();
         for (let i in submissions) {
             const sub = submissions[i];
@@ -94,6 +100,8 @@ const updateCodeforces = async (id, handle) => {
                 );
             }
         }
+
+        // Counting rated contest
         const contestResponse = await fetch(
             `${cfUrl}user.rating?handle=${handle}`
         );
@@ -105,6 +113,7 @@ const updateCodeforces = async (id, handle) => {
 
         const ratedContestCount = contests.length;
 
+        // Updating new data to the database
         await Codeforces.findByIdAndUpdate(id, {
             solvedProblem: solvedProblemCount.size,
             totalContest: ratedContestCount,

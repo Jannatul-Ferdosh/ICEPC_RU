@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Some data to show in home page
 const homeDataSchema = new mongoose.Schema({
     IUPC: {
         type: Number,

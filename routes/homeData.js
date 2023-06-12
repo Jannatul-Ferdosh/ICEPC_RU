@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 
+// Getting all data of Home Page
 router.get('/', async (req,res) => {
     let homeData = await HomeData.find();
     if(!homeData.length)

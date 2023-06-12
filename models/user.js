@@ -5,6 +5,7 @@ Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 
 
+// User schema to store neccessary data of a user.
 const userSchema = new mongoose.Schema({
     sid : {
         type: String,
@@ -41,7 +42,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-
+// Generating auth token for authenticaion and authorization
 userSchema.methods.generateAuthToken = function() {
     const token = jwt.sign({_id: this._id,sid: this.sid, profileId: this.profileId, isAdmin: this.isAdmin, isSuperAdmin: this.isSuperAdmin, isUpdated: this.isUpdated}, process.env.jwtPrivateKey);
     return token;
@@ -49,6 +50,7 @@ userSchema.methods.generateAuthToken = function() {
 
 const User = mongoose.model('User', userSchema);
 
+// Validating user data with joi module
 function validateUser(user)
 {
     const schema = Joi.object({

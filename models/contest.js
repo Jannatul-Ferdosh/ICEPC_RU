@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 
+// Database Schema 
 const contestSchema =new Schema({
     imgLink: {
         type: Array
@@ -13,39 +14,48 @@ const contestSchema =new Schema({
         required: true,
         minlength: 10
     },
-    participant1: new mongoose.Schema({
-        name: {
-            type: String,
-            required: true
-        },
-        profileId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Profile',
-            required: true
-        }
-    }),
-    participant2: new mongoose.Schema({
-        name: {
-            type: String,
-            required: true
-        },
-        profileId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Profile',
-            required: true
-        }
-    }),
-    participant3: new mongoose.Schema({
-        name: {
-            type: String,
-            required: true
-        },
-        profileId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Profile',
-            required: true
-        }
-    }),
+    participant1: {
+        type: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        required: true
+    },
+    participant2: {
+        type: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        required: true
+    },
+    participant3: {
+        type: new mongoose.Schema({
+            name: {
+                type: String,
+                required: true
+            },
+            profileId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Profile',
+                required: true
+            }
+        }),
+        required: true
+    },
     description: {
         type: String,
         required: true,
@@ -77,6 +87,8 @@ const contestSchema =new Schema({
 
 const Contest = mongoose.model('Contest', contestSchema);
 
+
+// Validating with joi module
 function validateContest(contest)
 {
      const schema = Joi.object({
@@ -85,15 +97,15 @@ function validateContest(contest)
         participant1: Joi.object({
             name: Joi.string().required(),
             profileId: Joi.objectId().required()
-        }),
+        }).required(),
         participant2: Joi.object({
             name: Joi.string().required(),
             profileId: Joi.objectId().required()
-        }),
+        }).required(),
         participant3: Joi.object({
             name: Joi.string().required(),
             profileId: Joi.objectId().required()
-        }),
+        }).required(),
         description: Joi.string().min(10).required(),
         rank: Joi.string().min(1).required(),
         link: Joi.optional(),

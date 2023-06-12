@@ -1,6 +1,5 @@
 
 const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
 const _ = require('lodash');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
@@ -13,26 +12,35 @@ const { HomeData } = require('../models/homeData');
 const router = express.Router();
 
 
-router.get('/me', async (req, res) => {
+// Getting data of a user from the jwt token
+router.get('/me',auth, async (req, res) => {
+    // Decoding the jwt token
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
-    let profile = await Profile.findById(jwtDecoded.profileId);
+    // Finding the profile
+    let profile = await Profile.findById(jwtDecoded.profileId).populate('codeforcesId');
+    if(!profile) return res.status(404).send('The Profile with the given id is not found');
 
-    const codeforces = await Codeforces.findById(profile.codeforcesId);
+    // Updating codeforces account if needed
+    const codeforces = profile.codeforcesId;
     const date = codeforces.updated;
     const currentDate = new Date(Date.now());
     if(codeforces.solvedProblem ===-1 || date.getDate() != currentDate.getDate() || date.getMonth() != currentDate.getMonth() || date.getFullYear() != currentDate.getFullYear())
     {
         await updateCodeforces(codeforces._id, profile.onlineJudgeHandle.codeforces);
     }
+    // Sending the profile with updated codeforces database
     profile = await Profile.findById(jwtDecoded.profileId).populate('codeforcesId');
     if(!profile) return res.status(404).send('The Profile with the given id is not found');
     res.send(profile);
 });
 
+// Getting profile data from profile id
 router.get('/:id', async (req, res) => {
-    let profile = await Profile.findById(req.params.id);
+    let profile = await Profile.findById(req.params.id).populate('codeforcesId');
+    if(!profile) return res.status(404).send('The Profile with the given id is not found');
 
-    const codeforces = await Codeforces.findById(profile.codeforcesId);
+    // Updating codeforces database if needed.
+    const codeforces = profile.codeforcesId;
     const date = codeforces.updated;
     const currentDate = new Date(Date.now());
     if(codeforces.solvedProblem ===-1 || date.getDate() != currentDate.getDate() || date.getMonth() != currentDate.getMonth() || date.getFullYear() != currentDate.getFullYear())
@@ -40,25 +48,30 @@ router.get('/:id', async (req, res) => {
         await updateCodeforces(codeforces._id, profile.onlineJudgeHandle.codeforces);
     }
 
+    // Sending prfile with updated codeforces data
     profile = await Profile.findById(req.params.id).populate('codeforcesId');
     if(!profile) return res.status(404).send('The Profile with the given id is not found');
     res.send(profile);
 });
 
+// Uploading profile picture
 router.post('/profilePicture/:id', auth, async (req, res) => {
 
+    // Finding the profile
     let profile = await Profile.findById(req.params.id);
     if(!profile) return res.status(404).send('The Profile with the given id is not found');
 
-    // Image upload handle
+    // Image upload handling
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
 
+    // Creating unique name
     let img = req.files.profilePicture;
     let ext = img.mimetype.split("/")[1];
     let imgName =`${Math.random()*100}.${Date.now()}.${ext}`;
     
+    // Moving the file to a folder 
     let uploadPath = './public/images/profiles/'+imgName;
     img.mv(uploadPath, (er) => {
         if(er) return res.send('File error');
@@ -73,20 +86,25 @@ router.post('/profilePicture/:id', auth, async (req, res) => {
     res.send(profile);
     
 });
+
+// Changing an existing profile picture
 router.put('/profilePicture/:id', auth, async (req, res) => {
 
+    // Finding the profile
     let profile = await Profile.findById(req.params.id);
     if(!profile) return res.status(404).send('The Profile with the given id is not found');
 
-    // Image upload handle
+    // Image upload handling
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
 
+    // Creating unique name
     let img = req.files.profilePicture;
     let ext = img.mimetype.split("/")[1];
     let imgName =`${Math.random()*100}.${Date.now()}.${ext}`;
     
+    // Moving the file to a folder 
     let uploadPath = './public/images/profiles/'+imgName;
     img.mv(uploadPath, (er) => {
         if(er) return res.send('File error');
@@ -94,6 +112,7 @@ router.put('/profilePicture/:id', auth, async (req, res) => {
 
     let imgPath = '/images/profiles/'+imgName;
 
+    // Removing previous image
     fs.unlink('./public'+profile.profilePicture, (err) => {
         if(err) throw err;
     });
@@ -106,6 +125,7 @@ router.put('/profilePicture/:id', auth, async (req, res) => {
     
 });
 
+// Creating a new profile.
 router.post('/', auth, async (req, res) => {
     // Adding sid from user to profile
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
@@ -153,10 +173,13 @@ router.post('/', auth, async (req, res) => {
     return res.send(token);
 });
 
+// Updating an existing profile
 router.put('/:id', auth, async (req, res) => {
+    // Adding sid from user to profile
     const jwtDecoded = jwt.verify(req.headers['x-auth-token'], process.env.jwtPrivateKey);
     req.body.sid = jwtDecoded.sid;
 
+    // Validating the post request
     const {error} = validateProfile(req.body);
     if(error) return res.status(404).send(error.details[0].message);
 
@@ -165,6 +188,7 @@ router.put('/:id', auth, async (req, res) => {
 
     req.body.profilePicture = profile.profilePicture;
 
+    // Validating Codeforces handle...
     const cfUrl = "https://codeforces.com/api/";
     let data;
     try {
@@ -176,10 +200,12 @@ router.put('/:id', auth, async (req, res) => {
     }
     if(data.status !='OK') return res.status(404).send('Handle Invalid');
 
+    // Updating profile with new data
     profile = await Profile.findByIdAndUpdate(req.params.id, _.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']), {new:true});
     if(!profile) return res.status(404).send('The profile with the given id is not found');
 
-    updateCodeforces(profile.codeforcesId, profile.onlineJudgeHandle.codeforces);
+    // Updating codeforces database
+    await updateCodeforces(profile.codeforcesId, profile.onlineJudgeHandle.codeforces);
 
     return res.send(profile);
 });

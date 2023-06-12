@@ -1,35 +1,41 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
+// Database schema
 const noticeSchema = new mongoose.Schema({
     date : {
         type : Date,
-        require:true
+        required:true
     },
     header: {
         type: String,
-        require: true,
+        required: true,
         minlength: 5,
         maxlength: 200
     },
     programDate: {
-        type: Date
+        type: Date,
+        required: true
     },
     description: {
         type: String,
-        require: true,
+        required: true,
         minlength:5
     },
     link: {
         type: String
     },
     banner: {
-        type: String
+        type: String, 
+        required: true,
+        default: '/images/notices/The_Professor.jpg'
     }
 });
 
 const Notice = mongoose.model('Notice', noticeSchema);
 
+
+// Validating data with joi module
 function validateNotice(notice)
 {
     const schema = Joi.object({
@@ -37,8 +43,8 @@ function validateNotice(notice)
         header: Joi.string().required().min(5).max(200),
         programDate: Joi.date(),
         description: Joi.string().required().min(5),
-        link: Joi.string(),
-        banner: Joi.string()
+        link: Joi.string().optional(),
+        banner: Joi.string().optional()
     });
 
     return schema.validate(notice);

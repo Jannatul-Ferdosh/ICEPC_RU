@@ -1,6 +1,8 @@
 const express = require('express');
 const upload = require('express-fileupload');
 
+
+// requiring the routes files
 const notices = require('../routes/notices');
 const users = require('../routes/users');
 const auth = require('../routes/auth');
@@ -17,6 +19,7 @@ const homeData = require('../routes/homeData');
 
 module.exports = function(app)
 {
+    // Adding all api endpoint
     app.use(express.json());
     app.use(upload());
     app.use('/api', express.static('public'));
@@ -29,7 +32,7 @@ module.exports = function(app)
     app.use('/api/programmers', programmers);
     app.use('/api/about', about);
     app.use('/api/gallery', photos);
-    app.use('/api/homedata', homeData)
+    app.use('/api/homedata', homeData);
 
 
     app.use('/api/tests', tests);

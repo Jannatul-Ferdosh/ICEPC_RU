@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
-
+// Database schema
 const photoSchema = new mongoose.Schema({
     photoLink: {
         type: String, 
@@ -10,8 +10,7 @@ const photoSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
-        maxlength: 250
+        required: true
     },
     heading: {
         type: String,
@@ -22,11 +21,12 @@ const photoSchema = new mongoose.Schema({
 
 const Photo = mongoose.model('Photo', photoSchema);
 
+// Validating data with joi module
 function validatePhoto(photo)
 {
     const schema = Joi.object({
         photoLink: Joi.string().required(),
-        description: Joi.string().required().max(250),
+        description: Joi.string().required(),
         heading: Joi.string().required()
     });
 
