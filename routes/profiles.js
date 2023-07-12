@@ -9,6 +9,7 @@ const express = require('express');
 const { User } = require('../models/user');
 const { createCodeforces, updateCodeforces, Codeforces } = require('../models/codeforces');
 const { HomeData } = require('../models/homeData');
+const { Vjudge } = require('../models/vjudge');
 const router = express.Router();
 
 
@@ -152,6 +153,10 @@ router.post('/', auth, async (req, res) => {
     //Creating the profile and saving it
     let profile = new Profile(_.pick(req.body, [ 'name', 'sid','profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
     profile = await profile.save();
+
+    // Creating Vjudge Profile
+    let vprofile = new Vjudge({profileId: profile._id});
+    await vprofile.save();
 
     // For updating HomeData object 
     let homeData = await HomeData.find();

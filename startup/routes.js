@@ -13,6 +13,7 @@ const programmers = require('../routes/programmers');
 const about = require('../routes/about');
 const photos = require('../routes/photos');
 const homeData = require('../routes/homeData');
+const vjudge = require('../routes/vjudge');
 
 
 
@@ -33,6 +34,8 @@ module.exports = function(app)
     app.use('/api/about', about);
     app.use('/api/gallery', photos);
     app.use('/api/homedata', homeData);
+
+    app.use('/api/vjudge', vjudge);
 
 
     app.use('/api/tests', tests);

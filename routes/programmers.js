@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 
 // Getting only requre data to use in dropdown 
 router.get('/list', async (req, res) => {
-  let programmers = await User.find({ isUpdated: true }).populate([{ path: 'profileId', select: ['name'] }]).select(['sid']);
+  let programmers = await User.find({ isUpdated: true }).populate([{ path: 'profileId', select: ['name', 'onlineJudgeHandle'] }]).select(['sid']);
   return res.send(programmers);
 });
 

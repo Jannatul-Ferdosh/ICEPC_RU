@@ -17,6 +17,14 @@ const homeDataSchema = new mongoose.Schema({
     programmers: {
         type: Number,
         default: 0
+    },
+    weeklycontestscount: {
+        type: Number,
+        default: 0
+    },
+    weeklycontests: {
+        type: Array,
+        default: []
     }
 });
 
