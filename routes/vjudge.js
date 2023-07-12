@@ -25,7 +25,7 @@ router.post('/',[auth, admin], async (req, res) => {
     if(error) return res.status(404).send(error.details[0].message);
 
     const vlist = req.body.list;
-    const contestDate = req.body.date;
+    const contestDate = Date.parse(req.body.date);
 
     // Updating Home Data
     let homeData = await HomeData.find();
@@ -83,7 +83,7 @@ router.post('/',[auth, admin], async (req, res) => {
         });
 
         currentdata.rating = 0;
-        for(let i=0; i<=(0.7 * totalcontest)-1; i++)
+        for(let i=0; (i<points.length) && (i<=(0.7 * totalcontest)-1); i++)
         {
             currentdata.rating += Number(points[i].point);
         }

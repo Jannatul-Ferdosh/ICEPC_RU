@@ -44,7 +44,8 @@ function validateVjudge(vjudge){
             profileId: Joi.objectId().required(),
             points: Joi.number(),
             panalties: Joi.number(),
-        }))
+        })),
+        date: Joi.optional()
     });
     return schema.validate(vjudge);
 }
