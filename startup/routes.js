@@ -14,6 +14,7 @@ const about = require('../routes/about');
 const photos = require('../routes/photos');
 const homeData = require('../routes/homeData');
 const vjudge = require('../routes/vjudge');
+const resources = require('../routes/resources');
 
 
 
@@ -36,6 +37,7 @@ module.exports = function(app)
     app.use('/api/homedata', homeData);
 
     app.use('/api/vjudge', vjudge);
+    app.use('/api/resources', resources);
 
 
     app.use('/api/tests', tests);
