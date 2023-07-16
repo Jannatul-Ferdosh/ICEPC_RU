@@ -4,18 +4,33 @@ const Joi = require('joi');
 const Schema = mongoose.Schema;
 
 // databse schema 
-const resourcesSchema = new Schema({
-    posts: {
-        type: Array,
-        default: [],
+const postSchema = new Schema({
+    heading: {
+        type: String,
+        required: true
     },
-    files: {
-        type: Array,
-        default: [],
+    text: {
+        type: String,
+        required: true
     }
 });
 
-const Resources = mongoose.model("Resources", resourcesSchema);
+const Post = mongoose.model("Post", postSchema);
+
+const fileSchema = new Schema({
+    heading: {
+        type: String,
+        required: true
+    },
+    path: {
+        type: String,
+        required: false
+    }
+});
+
+const File = mongoose.model("File", fileSchema);
+
+
 
 function validatePost(post){
     const schema = Joi.object({
@@ -31,6 +46,8 @@ function validateFile(file){
     return schema.validate(file);
 }
 
-exports.Resources = Resources;
+exports.Post = Post;
+exports.File = File;
+
 exports.validatePost = validatePost;
 exports.validateFile = validateFile;

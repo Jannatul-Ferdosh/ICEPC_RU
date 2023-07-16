@@ -2,35 +2,31 @@ const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 
 const express = require('express');
-const { Resources, validatePost, validateFile} = require('../models/resourse');
+const { Post, File , validatePost, validateFile} = require('../models/resourse');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-    let resources = await Resources.find();
-    if(!resources.length)
-    {
-        resources = new Resources({});
-        await resources.save();
-        return res.send(resources);
-    }
-    return res.send(resources[0]);
+router.get('/posts', async (req, res) => {
+    let posts = await Post.find();
+    return res.send(posts);
+});
+router.get('/posts/:id', async (req, res) => {
+    let post = await Post.findById(req.params.id);
+    return res.send(post);
+});
+
+router.get('/files', async (req, res) => {
+    let files = await File.find();
+    return res.send(files);
 });
 
 router.post('/post', async (req, res) => {
     const {error} = validatePost(req.body);
     if(error) return res.status(404).send(error.details[0].message);
-    
-    let resources = await Resources.find();
-    if(!resources.length)
-    {
-        resources = new Resources({});
-    }
-    else resources = resources[0];
 
-    resources.posts.push(req.body);
+    const post = new Post(req.body);
 
-    await resources.save();
-    return res.status(200).send(resources);
+    await post.save();
+    return res.status(200).send(post);
 });
 
 router.post('/file', async (req, res) => {
@@ -41,15 +37,10 @@ router.post('/file', async (req, res) => {
         return res.status(400).send('No files were uploaded.');
     }
     
-    let resources = await Resources.find();
-    if(!resources.length)
-    {
-        resources = new Resources({});
-    }
-    else resources = resources[0];
 
     let file = req.files.file;
-    let ext = file.mimetype.split("/")[1];
+    
+    let ext = file.name.split(".")[1];
     let fileName =`${Math.random()*100}.${Date.now()}.${ext}`;
 
     let uploadPath = './public/files/resources/'+fileName;
@@ -59,9 +50,9 @@ router.post('/file', async (req, res) => {
     
     let filePath = '/files/resources/'+fileName;
 
-    resources.files.push({heading: req.body.heading, path: filePath});
+    const newfile  = new File({heading: req.body.heading, path: filePath});
 
-    await resources.save();
+    await newfile.save();
     return res.status(200).send('OK');
 });
 
