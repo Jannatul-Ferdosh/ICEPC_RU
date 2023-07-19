@@ -8,7 +8,7 @@ const users = require('../routes/users');
 const auth = require('../routes/auth');
 const contests = require('../routes/contests');
 const profiles = require('../routes/profiles');
-const tests = require('../routes/tests');
+const mod = require('../routes/mod');
 const programmers = require('../routes/programmers');
 const about = require('../routes/about');
 const photos = require('../routes/photos');
@@ -38,8 +38,6 @@ module.exports = function(app)
 
     app.use('/api/vjudge', vjudge);
     app.use('/api/resources', resources);
-
-
-    app.use('/api/tests', tests);
+    app.use('/api/mod', mod);
     
 }
