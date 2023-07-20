@@ -3,6 +3,7 @@ const auth = require('../middleware/auth');
 const _ = require('lodash');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const logger = require('./utils/logger');
 
 const {Profile, validateProfile} = require('../models/profile');
 const express = require('express');
@@ -200,7 +201,7 @@ router.put('/:id', auth, async (req, res) => {
         const response = await fetch(`${cfUrl}user.info?handles=${req.body.onlineJudgeHandle.codeforces}`);
         data = await response.json();
     } catch (error) {
-        console.error("Error updating Codeforces data:", error);
+        logger.info("Error updating Codeforces data:(Update)", error);
         return;
     }
     if(data.status !='OK') return res.status(404).send('Handle Invalid');

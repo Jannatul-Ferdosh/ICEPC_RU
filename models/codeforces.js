@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const _ = require("lodash");
+const logger = require('./utils/logger');
 const fetch = require("node-fetch");
 const { Profile } = require("./profile");
 
@@ -52,7 +53,7 @@ const createCodeforces = async (profileId, data) => {
             { new: true }
         );
     } catch (error) {
-        console.error("Error creating Codeforces data:", error);
+        logger.info("Error creating Codeforces data ### (Creating):", error);
     }
 };
 
@@ -73,13 +74,14 @@ const updateCodeforces = async (id, handle) => {
             _.pick(data, ["rating", "maxRating", "rank", "maxRank", "updated"])
         );
     } catch (error) {
-        console.error("Error updating Codeforces data:", error);
+        logger.info("Error updating Codeforces data:", error);
 
         // console.log('Not OK' +'1');
 
         return;
     }
     try {
+        await delay(2200);
         // Updating total solved problem count and total participated contest list from all submission of a user.
         const submissionsResponse = await fetch(
             `${cfUrl}user.status?handle=${handle}`
@@ -119,7 +121,7 @@ const updateCodeforces = async (id, handle) => {
             totalContest: ratedContestCount,
         });
     } catch (error) {
-        console.error("Error updating Codeforces data:...", error);
+        logger.info("Error updating Codeforces data:... ( Section two) ", error);
         // console.log('Not OK' +'2 or 3');
     }
 };
