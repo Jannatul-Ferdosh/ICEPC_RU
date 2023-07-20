@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const _ = require("lodash");
-const logger = require('./utils/logger');
+const logger = require('../utils/logger');
 const fetch = require("node-fetch");
 const { Profile } = require("./profile");
 

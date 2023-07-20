@@ -3,7 +3,7 @@ const auth = require('../middleware/auth');
 const _ = require('lodash');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const logger = require('./utils/logger');
+const logger = require('../utils/logger');
 
 const {Profile, validateProfile} = require('../models/profile');
 const express = require('express');
