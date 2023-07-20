@@ -21,6 +21,7 @@ const logger = createLogger({
             options:{
                 useUnifiedTopology: true
             },
+            expireAfterSeconds: 2592000,
             collection: "serverlog",
             format: format.combine(format.timestamp(), format.simple())
         }),
@@ -36,6 +37,7 @@ const logger = createLogger({
             options:{
                 useUnifiedTopology: true
             },
+            expireAfterSeconds: 2592000,
             collection: "uncaught_serverlog",
             format: format.combine(format.timestamp(), format.simple())
         })
