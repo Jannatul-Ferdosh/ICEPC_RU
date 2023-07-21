@@ -63,5 +63,16 @@ function validateUser(user)
     return schema.validate(user);
 }
 
+function validateAdmin(user)
+{
+    const schema = Joi.object({
+        Id: Joi.objectId().required(),
+        isAdmin: Joi.boolean().required()
+    });
+
+    return schema.validate(user);
+}
+
 exports.User = User;
 exports.validateUser = validateUser;
+exports.validateAdmin = validateAdmin;
