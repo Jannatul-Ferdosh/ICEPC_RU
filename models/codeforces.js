@@ -81,7 +81,7 @@ const updateCodeforces = async (id, handle) => {
         return;
     }
     try {
-        await delay(2200);
+        await delay(3000);
         // Updating total solved problem count and total participated contest list from all submission of a user.
         const submissionsResponse = await fetch(
             `${cfUrl}user.status?handle=${handle}`
