@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const Joi = require('joi');
 const _ = require("lodash");
 const fetch = require("node-fetch");
-const { Profile } = require("./profile");
 
 const Schema = mongoose.Schema;
 
@@ -45,7 +44,8 @@ function validateVjudge(vjudge){
             points: Joi.number(),
             panalties: Joi.number(),
         })),
-        date: Joi.optional()
+        date: Joi.optional(),
+        constestSetter: Joi.objectId().required()
     });
     return schema.validate(vjudge);
 }

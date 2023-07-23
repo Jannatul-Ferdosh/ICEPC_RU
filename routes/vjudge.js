@@ -26,26 +26,15 @@ router.post('/',[auth, admin], async (req, res) => {
 
     const vlist = req.body.list;
     const contestDate = Date.parse(req.body.date);
+    const contestSetter = req.body.contestSetter;
 
-    // Updating Home Data
-    let homeData = await HomeData.find();
-    homeData[0].weeklycontestscount++;
-    homeData[0].weeklycontests.push(contestDate);
-
-    let contestlist = [];
-    for(let i=0; i<homeData[0].weeklycontests.length; i++)
-    {
-        if(Date.now()-homeData[0].weeklycontests[i] <= (90*24*60*60*1000))
-            {
-                contestlist.push(homeData[0].weeklycontests[i]);
-            }
-    }
-    homeData[0].weeklycontests = contestlist;
-    await homeData[0].save();
-
-
-    
-    const totalcontest = homeData[0].weeklycontests.length;
+    const setterdata = await Vjudge.findOne({profileId: contestSetter});
+    let val = {
+        point: setterdata.rating,
+        date: contestDate
+    };
+    setterdata.points.push(val);
+    await setterdata.save();
 
     for (const data of vlist)
     {
@@ -60,6 +49,34 @@ router.post('/',[auth, admin], async (req, res) => {
             date: contestDate
         };
         currentdata.panalties.push(val);
+
+        await currentdata.save();
+    }
+
+    const programmers = await Vjudge.find();
+
+    for(const currentdata of programmers)
+    {
+        // Updating Home Data
+        let homeData = await HomeData.find();
+        homeData[0].weeklycontestscount++;
+        homeData[0].weeklycontests.push(contestDate);
+
+        let contestlist = [];
+        for(let i=0; i<homeData[0].weeklycontests.length; i++)
+        {
+            if(Date.now()-homeData[0].weeklycontests[i] <= (90*24*60*60*1000))
+                {
+                    contestlist.push(homeData[0].weeklycontests[i]);
+                }
+        }
+        homeData[0].weeklycontests = contestlist;
+        await homeData[0].save();
+
+
+        
+        const totalcontest = homeData[0].weeklycontests.length;
+
 
         let points = [], panalties = [];
         let tpoints=0, tpanalties=0;
@@ -91,10 +108,7 @@ router.post('/',[auth, admin], async (req, res) => {
         
         await currentdata.save();
     }
-
-
-
-
+    
     return res.send('ok');
 });
 

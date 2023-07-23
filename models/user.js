@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     sid : {
         type: String,
         required: true,
+        unique: true,
         minlength : 10,
         maxlength : 10
     },
