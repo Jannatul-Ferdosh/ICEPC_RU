@@ -30,7 +30,7 @@ router.post('/',[auth, admin], async (req, res) => {
 
     const setterdata = await Vjudge.findOne({profileId: contestSetter});
     let val = {
-        point: setterdata.rating,
+        point: Number(setterdata.rating) + 20,
         date: contestDate
     };
     setterdata.points.push(val);
@@ -60,29 +60,28 @@ router.post('/',[auth, admin], async (req, res) => {
 
     const programmers = await Vjudge.find();
 
+    // Updating Home Data
+    let homeData = await HomeData.find();
+    homeData[0].weeklycontestscount++;
+    homeData[0].weeklycontests.push(contestDate);
+
+    let contestlist = [];
+    for(let i=0; i<homeData[0].weeklycontests.length; i++)
+    {
+        if(Date.now()-homeData[0].weeklycontests[i] <= (90*24*60*60*1000))
+            {
+                contestlist.push(homeData[0].weeklycontests[i]);
+            }
+    }
+    homeData[0].weeklycontests = contestlist;
+    await homeData[0].save();
+
+
+    
+    const totalcontest = homeData[0].weeklycontests.length;
+
     for(const currentdata of programmers)
     {
-        // Updating Home Data
-        let homeData = await HomeData.find();
-        homeData[0].weeklycontestscount++;
-        homeData[0].weeklycontests.push(contestDate);
-
-        let contestlist = [];
-        for(let i=0; i<homeData[0].weeklycontests.length; i++)
-        {
-            if(Date.now()-homeData[0].weeklycontests[i] <= (90*24*60*60*1000))
-                {
-                    contestlist.push(homeData[0].weeklycontests[i]);
-                }
-        }
-        homeData[0].weeklycontests = contestlist;
-        await homeData[0].save();
-
-
-        
-        const totalcontest = homeData[0].weeklycontests.length;
-
-
         let points = [], panalties = [];
         let tpoints=0, tpanalties=0;
         for(let i=0; i<currentdata.panalties.length; i++)
@@ -105,11 +104,11 @@ router.post('/',[auth, admin], async (req, res) => {
         });
 
         currentdata.rating = 0;
-        for(let i=0; (i<points.length) && (i<=(0.7 * totalcontest)-1); i++)
+        for(let i=0; (i<points.length) && (i<=Math.ceil(0.7*totalcontest)-1); i++)
         {
             currentdata.rating += Number(points[i].point);
         }
-        currentdata.rating = currentdata.rating / Math.floor(0.7*totalcontest);
+        currentdata.rating = currentdata.rating / Math.ceil(0.7*totalcontest);
         
         await currentdata.save();
     }
