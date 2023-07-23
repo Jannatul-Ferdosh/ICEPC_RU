@@ -45,7 +45,7 @@ function validateVjudge(vjudge){
             panalties: Joi.number(),
         })),
         date: Joi.optional(),
-        constestSetter: Joi.objectId().required()
+        contestSetter: Joi.objectId().required()
     });
     return schema.validate(vjudge);
 }
