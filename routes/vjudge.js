@@ -34,6 +34,11 @@ router.post('/',[auth, admin], async (req, res) => {
         date: contestDate
     };
     setterdata.points.push(val);
+    val = {
+        panaltie: 0,
+        date: contestDate
+    };
+    setterdata.panalties.push(val);
     await setterdata.save();
 
     for (const data of vlist)
@@ -80,7 +85,7 @@ router.post('/',[auth, admin], async (req, res) => {
 
         let points = [], panalties = [];
         let tpoints=0, tpanalties=0;
-        for(let i=0; i<currentdata.points.length; i++)
+        for(let i=0; i<currentdata.panalties.length; i++)
         {
             if(Date.now()-currentdata.points[i].date <= (90*24*60*60*1000))
             {
