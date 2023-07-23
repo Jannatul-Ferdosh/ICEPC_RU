@@ -15,7 +15,7 @@ router.get('/me', auth, async (req, res) => {
 
 // Getting User list
 router.get('/list', async (req, res) => {
-    const users = await User.find().populate([{ path: 'profileId', select: ['name', 'contacts'] }]).select(['sid', 'isAdmin']);
+    const users = await User.find({ isUpdated: true }).populate([{ path: 'profileId', select: ['name', 'contacts'] }]).select(['sid', 'isAdmin']);
     res.send(users);
 });
 
