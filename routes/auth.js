@@ -21,6 +21,9 @@ router.post('/', async(req, res) =>{
     const validPassword = bcrypt.compare(req.body.password, user.password);
     if(!validPassword) return res.status(400).send('Invalid email or password');
 
+    if(!user.isVerified){
+        return res.status(403).send('Please varify your account from email');
+    }
     // Generating auth jwt token
     const token = user.generateAuthToken();
     res.send(token);

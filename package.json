@@ -33,6 +33,7 @@
     "lodash": "^4.17.21",
     "mongoose": "^7.3.3",
     "node-fetch": "^2.6.11",
+    "nodemailer": "^6.9.4",
     "winston": "^3.8.2",
     "winston-mongodb": "^5.1.1"
   }

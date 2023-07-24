@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         default:"64718aa3cde6d3c575b0f442"
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
     isUpdated: {
         type: Boolean,
         default: false
@@ -48,6 +52,16 @@ userSchema.methods.generateAuthToken = function() {
     const token = jwt.sign({_id: this._id,sid: this.sid, profileId: this.profileId, isAdmin: this.isAdmin, isSuperAdmin: this.isSuperAdmin, isUpdated: this.isUpdated}, process.env.jwtPrivateKey);
     return token;
 }
+
+userSchema.methods.generateVerificationToken = function () {
+    const user = this;
+    const verificationToken = jwt.sign(
+        { ID: user._id },
+        process.env.userVerificationKey,
+        { expiresIn: "1d" }
+    );
+    return verificationToken;
+};
 
 const User = mongoose.model('User', userSchema);
 
