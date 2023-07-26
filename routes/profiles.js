@@ -208,6 +208,7 @@ router.put('/:id', auth, async (req, res) => {
     }
     if(data.status !='OK') return res.status(404).send('Handle Invalid');
 
+    req.body.onlineJudgeHandle.codeforces = data.result[0].handle;
     // Updating profile with new data
     profile = await Profile.findByIdAndUpdate(req.params.id, _.pick(req.body, [ 'name', 'profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']), {new:true});
     if(!profile) return res.status(404).send('The profile with the given id is not found');
