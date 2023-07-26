@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
       date.getFullYear() !== currentDate.getFullYear()
     ) {
       await delay(3000); // Delay before making the next API call
-      updateCodeforces(programmer.profileId.codeforcesId._id, programmer.profileId.onlineJudgeHandle.codeforces);
+      await updateCodeforces(programmer.profileId.codeforcesId._id, programmer.profileId.onlineJudgeHandle.codeforces);
     }
   }
 });

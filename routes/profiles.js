@@ -151,6 +151,8 @@ router.post('/', auth, async (req, res) => {
     }
     if(data.status !='OK') return res.status(404).send('Handle Invalid');
 
+    req.body.onlineJudgeHandle.codeforces = data.result[0].handle;
+
     //Creating the profile and saving it
     let profile = new Profile(_.pick(req.body, [ 'name', 'sid','profilePicture', 'bio','currentStatus', 'contacts', 'onlineJudgeLink', 'onlineJudgeHandle']));
     profile = await profile.save();

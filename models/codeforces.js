@@ -68,10 +68,9 @@ const updateCodeforces = async (id, handle) => {
         // console.log(userInfo.status + '1');
 
         const data = userInfo.result[0];
-        data.updated = new Date(Date.now());
         await Codeforces.findByIdAndUpdate(
             id,
-            _.pick(data, ["rating", "maxRating", "rank", "maxRank", "updated"])
+            _.pick(data, ["rating", "maxRating", "rank", "maxRank"])
         );
     } catch (error) {
         logger.info("Error updating Codeforces data:", error);
@@ -81,7 +80,7 @@ const updateCodeforces = async (id, handle) => {
         return;
     }
     try {
-        await delay(3000);
+        // await delay(3000);
         // Updating total solved problem count and total participated contest list from all submission of a user.
         const submissionsResponse = await fetch(
             `${cfUrl}user.status?handle=${handle}`
@@ -104,7 +103,7 @@ const updateCodeforces = async (id, handle) => {
         }
 
         // Counting rated contest
-        await delay(3000);
+        // await delay(3000);
         const contestResponse = await fetch(
             `${cfUrl}user.rating?handle=${handle}`
         );
@@ -116,10 +115,13 @@ const updateCodeforces = async (id, handle) => {
 
         const ratedContestCount = contests.length;
 
+        const dt = new Date(Date.now());
+
         // Updating new data to the database
         await Codeforces.findByIdAndUpdate(id, {
             solvedProblem: solvedProblemCount.size,
             totalContest: ratedContestCount,
+            updated: dt,
         });
     } catch (error) {
         logger.info("Error updating Codeforces data:... ( Section two) ", error);
