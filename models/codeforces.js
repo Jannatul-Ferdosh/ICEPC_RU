@@ -104,6 +104,7 @@ const updateCodeforces = async (id, handle) => {
         }
 
         // Counting rated contest
+        await delay(3000);
         const contestResponse = await fetch(
             `${cfUrl}user.rating?handle=${handle}`
         );
