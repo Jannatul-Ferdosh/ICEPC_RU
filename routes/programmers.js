@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
       date.getMonth() !== currentDate.getMonth() ||
       date.getFullYear() !== currentDate.getFullYear()
     ) {
+      await delay(2500);
       await updateCodeforces(programmer.profileId.codeforcesId._id, programmer.profileId.onlineJudgeHandle.codeforces);
     }
   }
