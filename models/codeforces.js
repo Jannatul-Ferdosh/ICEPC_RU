@@ -62,6 +62,7 @@ const updateCodeforces = async (id, handle) => {
     const cfUrl = "https://codeforces.com/api/";
     try {
         // Upadating user info.
+        await delay(3000);
         const response = await fetch(`${cfUrl}user.info?handles=${handle}`);
         const userInfo = await response.json();
 
