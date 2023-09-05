@@ -175,7 +175,7 @@ router.post('/', auth, async (req, res) => {
     await createCodeforces(profile._id, data);
 
     //Updating the JWT token and sending to frontend
-    let user = await User.findByIdAndUpdate(jwtDecoded._id,{profileId : profile._id, isUpdated: true},{new:true});
+    let user = await User.findOneAndUpdate({sid: jwtDecoded.sid},{profileId : profile._id, isUpdated: true},{new:true});
     const token = user.generateAuthToken();
 
     return res.send(token);
