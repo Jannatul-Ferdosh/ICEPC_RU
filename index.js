@@ -3,10 +3,13 @@ require('dotenv').config();
 const logger = require('./utils/logger');
 const cors = require('cors');
 const express = require('express');
+const swaggerUI = require('swagger-ui-express');
+const swaggerSpec = require('./utils/swagger');
 const app = express();
 
 // Use for react access in CORS Policy
 app.use(cors());
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // Refractored index file in startup folder
 require('./startup/logging')();
